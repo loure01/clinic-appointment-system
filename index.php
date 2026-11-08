@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_appointment'])) 
     if (!empty($patient_name) && !empty($email) && !empty($phone) &&
         $doctor_id > 0 && !empty($date) && !empty($time)) {
 
-        // Check if patient already exists
+        // Pag Fetch sa existing patient gamit Email Address
         $stmt = $conn->prepare(
             "SELECT patient_id FROM patients WHERE email = ?"
         );
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_appointment'])) 
 
         if ($patient) {
 
-            // Get existing patient ID
+            // Pag fetch sa existing patient gamit patient_id if wala mag register og bag-o
             $patient_id = $patient['patient_id'];
 
         } else {
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_appointment'])) 
                 $date,
                 $time
             );
-
+        // Checking Booking result if success ba or error
             if ($appointment_id) {
                 $message = "Appointment booked successfully! Appointment ID: #" . $appointment_id;
                 $message_type = "success";

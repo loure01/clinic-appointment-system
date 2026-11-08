@@ -29,7 +29,7 @@ function createAppointment($conn, $patient_id, $doctor_id, $date, $time) {
     return $stmt->execute() ? $stmt->insert_id : false;
 }
 
-// It fetch all the appointments with patients id and doctors id
+//Fetch all the appointments with appointment_id, patients_id and doctors_id
 function getAllAppointments($conn) {
     $sql = "
         SELECT

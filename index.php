@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_appointment'])) 
     if (!empty($patient_name) && !empty($email) && !empty($phone) &&
         $doctor_id > 0 && !empty($date) && !empty($time)) {
 
-        // Pag Fetch sa existing patient gamit Email Address
+        //Pag Fetch sa existing patient gamit Email Address
         $stmt = $conn->prepare(
             "SELECT patient_id FROM patients WHERE email = ?"
         );
@@ -36,12 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_appointment'])) 
 
         if ($patient) {
 
-            // Pag fetch sa existing patient gamit patient_id if wala mag register og bag-o
+            //Pag fetch sa existing patient gamit patient_id if wala mag register og bag-o
             $patient_id = $patient['patient_id'];
 
         } else {
 
-            // Register new patient
+            //Register new patient
             $stmt = $conn->prepare(
                 "INSERT INTO patients (name, email, phone) VALUES (?, ?, ?)"
             );

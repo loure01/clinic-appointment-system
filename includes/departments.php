@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
 
-// Fetch all medical departments
+//Fetch all the medical departments
 function getAllDepartments($conn) {
 
     $sql = "SELECT * FROM departments ORDER BY name ASC";

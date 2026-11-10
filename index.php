@@ -115,94 +115,122 @@ $appointments = getAllAppointments($conn);
     <?php endif; ?>
 
     <div class="grid">
-        <!-- Section 1: Appointment Booking Form -->
-        <div class="card">
-            <h2>Book Appointment</h2>
-            <form action="index.php" method="POST">
-                <div class="form-group">
-                    <label>Patient Name</label>
-                    <input type="text" name="patient_name" required placeholder="Full Name">
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" required placeholder="Email">
-                </div>
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="text" name="phone" required placeholder="Enter Phone Number">
-                </div>
-                <div class="form-group">
-                    <label>Select Doctor</label>
-    <select name="doctor_id" id="doctorSelect" required>
-        <option value="">-- Choose Doctor --</option>
-        <?php foreach ($doctors as $doctor): ?>
-            <option value="<?= $doctor['doctor_id'] ?>" 
-                    data-start="<?= htmlspecialchars($doctor['work_start'] ?? '') ?>" 
-                    data-end="<?= htmlspecialchars($doctor['work_end'] ?? '') ?>">
-                <?= htmlspecialchars($doctor['name']) ?> (<?= htmlspecialchars($doctor['dept_name'] ?? $doctor['department_name'] ?? '') ?>)
-            </option>
-        <?php endforeach; ?>
-    </select>
-</div>
+       <div class="grid">
+    <!-- Column 1: Booking Form -->
+    <div class="card">
+        <h2>Book Appointment</h2>
+        <form action="index.php" method="POST" id="bookingForm">
+            <div class="form-group">
+                <label>Patient Name</label>
+                <input type="text" name="patient_name" required placeholder="Full Name">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" required placeholder="Email">
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" name="phone" required placeholder="Enter Phone Number">
+            </div>
+            <div class="form-group">
+                <label>Select Doctor</label>
+                <select name="doctor_id" id="doctorSelect" required>
+                    <option value="">-- Choose Doctor --</option>
+                    <?php foreach ($doctors as $doctor): ?>
+                        <option value="<?= $doctor['doctor_id'] ?>" 
+                                data-start="<?= htmlspecialchars($doctor['work_start'] ?? '') ?>" 
+                                data-end="<?= htmlspecialchars($doctor['work_end'] ?? '') ?>">
+                            <?= htmlspecialchars($doctor['name']) ?> (<?= htmlspecialchars($doctor['dept_name'] ?? $doctor['department_name'] ?? '') ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
 
-<!-- NEW: Doctor Shift Info Box -->
-<div id="doctorScheduleNotice" style="display:none; background:#e8f4fd; color:#1a5276; padding:10px; border-radius:4px; margin-bottom:15px; font-size:14px;">
-    <strong>Doctor Shift:</strong> <span id="shiftTime"></span>
+            <div id="doctorScheduleNotice" style="display:none; background:#e8f4fd; color:#1a5276; padding:10px; border-radius:6px; margin-bottom:15px; font-size:13px;">
+                <strong>Doctor Shift:</strong> <span id="shiftTime"></span>
+            </div>
 
-    <div class="form-group">
-    <label>Date</label>
-    <input type="date" name="appointment_date" id="dateInput" required min="<?= date('Y-m-d') ?>">
-</div>
+            <div class="form-group">
+                <label>Date</label>
+                <input type="date" name="appointment_date" id="dateInput" required min="<?= date('Y-m-d') ?>">
+            </div>
+            <div class="form-group">
+                <label>Time Slot</label>
+                <select name="appointment_time" id="timeSelect" required>
+                    <option value="">-- Choose Time --</option>
+                    <option value="08:00 AM">08:00 AM</option>
+                    <option value="08:30 AM">08:30 AM</option>
+                    <option value="09:00 AM">09:00 AM</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="01:00 PM">01:00 PM</option>
+                    <option value="02:00 PM">02:00 PM</option>
+                    <option value="03:00 PM">03:00 PM</option>
+                    <option value="04:00 PM">04:00 PM</option>
+                    <option value="04:30 PM">04:30 PM</option>
+                    <option value="05:00 PM">05:00 PM</option>
+                </select>
+            </div>
+            <button type="submit" name="book_appointment" class="btn">Confirm Booking</button>
+        </form>
+    </div>
 
-< class="form-group">
-    <label>Time Slot</label>
-    <select name="appointment_time" id="timeSelect" required>
-        <option value="">-- Choose Time --</option>
-        <option value="08:00 AM">08:00 AM</option>
-        <option value="08:30 AM">08:30 AM</option>
-        <option value="09:00 AM">09:00 AM</option>
-        <option value="10:00 AM">10:00 AM</option>
-        <option value="11:00 AM">11:00 AM</option>
-        <option value="01:00 PM">01:00 PM</option>
-        <option value="02:00 PM">02:00 PM</option>
-        <option value="03:00 PM">03:00 PM</option>
-        <option value="04:00 PM">04:00 PM</option>
-        <option value="04:30 PM">04:30 PM</option>
-        <option value="05:00 PM">05:00 PM</option>
-    </select>
-</div>
-        <!-- Section 2: Appointments Schedule Table -->
-        <div class="card">
-            <h2>Scheduled Appointments</h2>
-            <?php if (empty($appointments)): ?>
-                <p>No appointments booked yet.</p>
-            <?php else: ?>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Patient</th>
-                            <th>Doctor</th>
-                            <th>Date</th>
-                            <th>Time</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($appointments as $app): ?>
-                            <tr>
-                                <td>#<?= $app['appointment_id'] ?></td>
-                                <td><?= htmlspecialchars($app['patient_name']) ?></td>
-                                <td><?= htmlspecialchars($app['doctor_name']) ?></td>
-                                <td><?= htmlspecialchars($app['appointment_date']) ?></td>
-                                <td><?= htmlspecialchars($app['appointment_time']) ?></td>
-                                <td><span class="badge"><?= htmlspecialchars($app['status']) ?></span></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
+    <!-- Column 2: Calendar & Upcoming Card -->
+    <div class="card calendar-card">
+        <div class="calendar-header">
+            <h2 id="calendarMonthYear">Calendar</h2>
+            <div class="calendar-nav">
+                <button type="button" id="prevMonth">&lt;</button>
+                <button type="button" id="nextMonth">&gt;</button>
+            </div>
         </div>
+
+        <div class="calendar-weekdays">
+            <div>SUN</div><div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div>
+        </div>
+        <div class="calendar-days" id="calendarDays"></div>
+
+        <div class="upcoming-section">
+            <div class="upcoming-header">
+                <h3>Upcoming</h3>
+            </div>
+            <div id="upcomingList" class="upcoming-list">
+                <!-- Populated dynamically by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Column 3: Scheduled Appointments Table -->
+    <div class="card">
+        <h2>Scheduled Appointments</h2>
+        <?php if (empty($appointments)): ?>
+            <p>No appointments booked yet.</p>
+        <?php else: ?>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($appointments as $app): ?>
+                        <tr>
+                            <td>#<?= $app['appointment_id'] ?></td>
+                            <td><?= htmlspecialchars($app['patient_name']) ?></td>
+                            <td><?= htmlspecialchars($app['doctor_name']) ?></td>
+                            <td><?= htmlspecialchars($app['appointment_date']) ?></td>
+                            <td><?= htmlspecialchars($app['appointment_time']) ?></td>
+                            <td><span class="badge"><?= htmlspecialchars($app['status']) ?></span></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
     </div>
 </div>
 

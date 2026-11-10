@@ -133,8 +133,6 @@ $appointments = getAllAppointments($conn);
                 </div>
                 <div class="form-group">
                     <label>Select Doctor</label>
-                    <div class="form-group">
-    <label>Select Doctor</label>
     <select name="doctor_id" id="doctorSelect" required>
         <option value="">-- Choose Doctor --</option>
         <?php foreach ($doctors as $doctor): ?>

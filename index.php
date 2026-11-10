@@ -208,5 +208,57 @@ $appointments = getAllAppointments($conn);
     </div>
 </div>
 
+<script>
+// interactive na part hehe
+const existingAppointments = <?= json_encode($appointments); ?>;
+
+const doctorSelect = document.getElementById('doctorSelect');
+const dateInput = document.getElementById('dateInput');
+const timeSelect = document.getElementById('timeSelect');
+const noticeBox = document.getElementById('doctorScheduleNotice');
+const shiftTime = document.getElementById('shiftTime');
+
+function updateAvailableSlots() {
+    const selectedDoctorId = doctorSelect.value;
+    const selectedDate = dateInput.value;
+
+    // 1. makita ang info sa doctor
+    const selectedOption = doctorSelect.options[doctorSelect.selectedIndex];
+    if (selectedDoctorId && selectedOption.dataset.start) {
+        shiftTime.textContent = selectedOption.dataset.start + ' - ' + selectedOption.dataset.end;
+        noticeBox.style.display = 'block';
+    } else {
+        noticeBox.style.display = 'none';
+    }
+
+    // 2. disable ang time na gi book na sa client
+    Array.from(timeSelect.options).forEach(option => {
+        if (!option.value) return;
+
+        const isBooked = existingAppointments.some(app => 
+            app.doctor_id == selectedDoctorId && 
+            app.appointment_date === selectedDate && 
+            app.appointment_time === option.value &&
+            app.status !== 'Cancelled'
+        );
+
+        if (selectedDoctorId && selectedDate && isBooked) {
+            option.disabled = true;
+            option.textContent = option.value + " (BOOKED)";
+            option.style.color = "#a00";
+        } else {
+            option.disabled = false;
+            option.textContent = option.value;
+            option.style.color = "";
+        }
+    });
+}
+
+doctorSelect.addEventListener('change', updateAvailableSlots);
+dateInput.addEventListener('change', updateAvailableSlots);
+</script>
+
+</body>
+</html>
 </body>
 </html>

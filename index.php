@@ -150,6 +150,28 @@ $appointments = getAllAppointments($conn);
 <!-- NEW: Doctor Shift Info Box -->
 <div id="doctorScheduleNotice" style="display:none; background:#e8f4fd; color:#1a5276; padding:10px; border-radius:4px; margin-bottom:15px; font-size:14px;">
     <strong>Doctor Shift:</strong> <span id="shiftTime"></span>
+
+    <div class="form-group">
+    <label>Date</label>
+    <input type="date" name="appointment_date" id="dateInput" required min="<?= date('Y-m-d') ?>">
+</div>
+
+< class="form-group">
+    <label>Time Slot</label>
+    <select name="appointment_time" id="timeSelect" required>
+        <option value="">-- Choose Time --</option>
+        <option value="08:00 AM">08:00 AM</option>
+        <option value="08:30 AM">08:30 AM</option>
+        <option value="09:00 AM">09:00 AM</option>
+        <option value="10:00 AM">10:00 AM</option>
+        <option value="11:00 AM">11:00 AM</option>
+        <option value="01:00 PM">01:00 PM</option>
+        <option value="02:00 PM">02:00 PM</option>
+        <option value="03:00 PM">03:00 PM</option>
+        <option value="04:00 PM">04:00 PM</option>
+        <option value="04:30 PM">04:30 PM</option>
+        <option value="05:00 PM">05:00 PM</option>
+    </select>
 </div>
         <!-- Section 2: Appointments Schedule Table -->
         <div class="card">

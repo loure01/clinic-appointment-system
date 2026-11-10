@@ -182,7 +182,7 @@ $appointments = getAllAppointments($conn);
             </div>
         </div>
 
-        <!-- Column 3: Scheduled Appointments Table -->
+      <!-- Column 3: Scheduled Appointments Table & Patient Info -->
         <div class="card">
             <h2>Scheduled Appointments</h2>
             <div class="table-responsive">
@@ -215,10 +215,21 @@ $appointments = getAllAppointments($conn);
                     </table>
                 <?php endif; ?>
             </div>
-        </div>
-    </div>
-</div>
 
+            <!-- Clinic Hours & Emergency Notice Box -->
+            <div class="clinic-notice-box">
+                <div class="notice-section">
+                    <h3>⏰ Clinic Operating Hours</h3>
+                    <p><strong>Monday – Saturday:</strong> 8:00 AM – 5:00 PM</p>
+                    <p><strong>Sunday & Holidays:</strong> Closed for Routine Consultations</p>
+                </div>
+                
+                <div class="notice-section emergency">
+                    <h3>🚨 Medical Emergency Notice</h3>
+                    <p>If you are experiencing a life-threatening medical emergency, please do not wait for an online booking confirmation. Visit the nearest Emergency Room or contact local emergency services immediately.</p>
+                </div>
+            </div>
+        </div>
 <script>
 const existingAppointments = <?= json_encode($appointments); ?>;
 const doctorSelect = document.getElementById('doctorSelect');

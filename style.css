@@ -1,4 +1,4 @@
-/* Separated Css file*/
+/* separate na css file */
 :root {
     --primary: #26734d;
     --primary-dark: #1b5438;
@@ -27,10 +27,9 @@ body {
 
 .container {
     width: 100%;
-    max-width: 1300px;
+    max-width: 1400px;
     margin: 0 auto;
 }
-
 
 header {
     background: var(--surface);
@@ -57,14 +56,13 @@ header p {
     font-size: 14px;
 }
 
-
+/* clear ug luag nga layout */
 .grid {
     display: grid;
-    grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.65fr);
+    grid-template-columns: 320px 320px 1fr;
     gap: 24px;
     align-items: start;
 }
-
 
 .card {
     background: var(--surface);
@@ -85,7 +83,12 @@ header p {
     border-bottom: 1px solid var(--border);
 }
 
+.card p {
+    color: var(--muted);
+    font-size: 13px;
+}
 
+/* design para sa form inputs ug select box */
 .form-group {
     margin-bottom: 19px;
 }
@@ -129,7 +132,6 @@ header p {
     box-shadow: 0 0 0 3px rgba(38, 115, 77, 0.09);
 }
 
-
 button.btn {
     width: 100%;
     height: 46px;
@@ -154,7 +156,157 @@ button.btn:active {
     transform: scale(0.99);
 }
 
+/* desinyo sa calendar card ug mga nav button */
+.calendar-card {
+    padding: 24px;
+}
 
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.calendar-header h2 {
+    font-size: 1.1rem;
+    margin: 0;
+    border: none;
+    padding: 0;
+    color: var(--primary-dark);
+}
+
+.calendar-nav button {
+    background: var(--primary-soft);
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--primary-dark);
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+}
+
+.calendar-nav button:hover {
+    background: #d8ebd9;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    text-align: center;
+}
+
+.calendar-day {
+    padding: 6px 0;
+    font-size: 13px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    transition: background 0.2s ease;
+}
+
+.calendar-day:hover:not(.empty) {
+    background-color: var(--primary-soft);
+}
+
+.calendar-day.empty {
+    cursor: default;
+    background: transparent !important;
+}
+
+.calendar-day.selected {
+    background-color: var(--primary);
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+/* pula nga tuldok (red dot) para muindicate if naay naka-book */
+.calendar-day.has-booking::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    width: 5px;
+    height: 5px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+}
+
+.calendar-day.selected.has-booking::after {
+    background-color: #ffffff;
+}
+
+/* listahan sa mga upcoming appointments */
+.upcoming-section {
+    margin-top: 20px;
+    border-top: 1px solid var(--border);
+    padding-top: 15px;
+}
+
+.upcoming-header h3 {
+    margin: 0 0 12px 0;
+    font-size: 0.95rem;
+    color: var(--primary-dark);
+    font-weight: 700;
+}
+
+.upcoming-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fbfcfb;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.upcoming-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.upcoming-info {
+    font-size: 12px;
+}
+
+.upcoming-title {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.upcoming-time {
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+/* desinyo sa appointments table sa tuo */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -193,7 +345,6 @@ table tbody tr:last-child td {
     border-bottom: none;
 }
 
-
 .badge {
     display: inline-flex;
     align-items: center;
@@ -205,7 +356,7 @@ table tbody tr:last-child td {
     font-weight: 600;
 }
 
-
+/* desinyo para sa success ug error messages */
 .alert {
     padding: 14px 17px;
     margin-bottom: 22px;
@@ -226,27 +377,23 @@ table tbody tr:last-child td {
     color: #b63f38;
 }
 
-
-.card p {
-    color: var(--muted);
-    font-size: 13px;
-}
-
-
 ::selection {
     background: #d5eadb;
     color: var(--primary-dark);
 }
 
-/* RESPONSIVE DESIGN */
-
-@media (max-width: 1000px) {
+/* adjustments para sa gagmay nga screen ug cellphone */
+@media (max-width: 1150px) {
     .grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
     body {
         padding: 15px 10px;
     }
@@ -272,144 +419,4 @@ table tbody tr:last-child td {
         overflow-x: auto;
         white-space: nowrap;
     }
-}
-
-// update sa layout
-.grid {
-    display: grid;
-    grid-template-columns: 320px 320px 1fr;
-    gap: 20px;
-    align-items: start;
-}
-
-/* Calendar Card Styles */
-.calendar-card {
-    padding: 20px;
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.calendar-header h2 {
-    font-size: 1.1rem;
-    margin: 0;
-    border: none;
-    padding: 0;
-}
-
-.calendar-nav button {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    color: #666;
-    padding: 2px 8px;
-}
-
-.calendar-weekdays {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-size: 11px;
-    font-weight: 700;
-    color: #888;
-    margin-bottom: 8px;
-}
-
-.calendar-days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    text-align: center;
-}
-
-.calendar-day {
-    padding: 8px 0;
-    font-size: 13px;
-    border-radius: 50%;
-    cursor: pointer;
-    position: relative;
-    min-height: 34px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.calendar-day:hover {
-    background-color: #f0f4f8;
-}
-
-.calendar-day.empty {
-    cursor: default;
-    background: transparent !important;
-}
-
-.calendar-day.selected {
-    background-color: #1a5276;
-    color: #fff;
-}
-
-/* Red Dot Indicator for Booked Days */
-.calendar-day.has-booking::after {
-    content: '';
-    position: absolute;
-    bottom: 2px;
-    width: 5px;
-    height: 5px;
-    background-color: #e74c3c;
-    border-radius: 50%;
-}
-
-/* Upcoming Appointments List */
-.upcoming-section {
-    margin-top: 20px;
-    border-top: 1px solid #eee;
-    padding-top: 15px;
-}
-
-.upcoming-header h3 {
-    margin: 0 0 10px 0;
-    font-size: 0.95rem;
-    color: #333;
-}
-
-.upcoming-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: #f8fbfe;
-    padding: 10px 12px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-}
-
-.upcoming-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.upcoming-info {
-    font-size: 12px;
-}
-
-.upcoming-title {
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-.upcoming-time {
-    color: #7f8c8d;
-    margin-top: 2px;
 }

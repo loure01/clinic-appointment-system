@@ -97,7 +97,7 @@ if ($selected_doctor_id > 0) {
     }
 }
 
-// 4. Find Booked Slots for this specific doctor and date
+
 $booked_slots = [];
 if ($selected_doctor) {
     foreach ($appointments as $app) {
@@ -111,23 +111,23 @@ if ($selected_doctor) {
     }
 }
 
-// 5. GENERATE DYNAMIC SLOTS BASED ON INDIVIDUAL DOCTOR'S SHIFT
+// 5. GENERATE DYNAMIC SLOTS BASED ON INDIVIDUAL DOCTOR'S SHIFT based sa database
 $dynamic_slots = [];
 if ($selected_doctor) {
     $start_str = $selected_doctor['work_start'] ?? '09:00 AM';
     $end_str   = $selected_doctor['work_end'] ?? '05:00 PM';
 
-    // Convert to 24-hour format for accurate math, then convert to timestamps
+    
     $start = strtotime($start_str);
     $end   = strtotime($end_str);
 
-    // Check if the doctor starts at :30 (e.g. 08:30 AM)
+    // Check if the doctor starts at :30 example 8:30
     $minutes = date('i', $start);
-    $interval = ($minutes == '30') ? 1800 : 3600; // Add 30 mins or 60 mins
+    $interval = ($minutes == '30') ? 1800 : 3600; 
 
-    // Loop from start to end, adding time based on the interval
+   
     while ($start < $end) {
-        // 'h:i A' forces leading zero (e.g., 08:00 AM, 08:30 AM)
+        
         $dynamic_slots[] = date('h:i A', $start);
         $start += $interval; 
     }

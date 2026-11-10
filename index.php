@@ -1,5 +1,5 @@
 <?php
-// 1. Include Config & Backend Modules
+// config and modules
 require_once 'config/db.php';
 require_once 'includes/departments.php';
 require_once 'includes/doctors.php';
@@ -11,7 +11,7 @@ require_once 'includes/medical_records.php';
 $message = "";
 $message_type = "";
 
-// 2A. Handle Form Submission (Appointment Booking - CREATE)
+// handles form
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_appointment'])) {
     $patient_name = trim($_POST['patient_name']);
     $email        = trim($_POST['email']);
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_appointment'])) 
     $date         = $_POST['appointment_date'];
     $time         = $_POST['appointment_time'];
 
-    // Check if selected date falls on a weekend (Sunday = 0, Saturday = 6)
+    // Check date
     $day_of_week = date('w', strtotime($date));
 
     if ($day_of_week == 0 || $day_of_week == 6) {
@@ -68,13 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_appointment'])) 
     }
 }
 
-// 2B. Handle Appointment Cancellation (UPDATE / DELETE)
+// for cancellation
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_appointment'])) {
     $cancel_id    = (int)$_POST['cancel_appointment_id'];
     $cancel_email = trim($_POST['cancel_email']);
 
     if ($cancel_id > 0 && !empty($cancel_email)) {
-        // Verify appointment ID matches patient email for security
+        // verification for cancellation
         $stmt = $conn->prepare("
             SELECT a.appointment_id 
             FROM appointments a 

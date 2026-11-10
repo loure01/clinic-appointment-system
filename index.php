@@ -235,7 +235,6 @@ $appointments = getAllAppointments($conn);
 </div>
 
 <script>
-// interactive na part hehe
 const existingAppointments = <?= json_encode($appointments); ?>;
 
 const doctorSelect = document.getElementById('doctorSelect');
@@ -244,11 +243,96 @@ const timeSelect = document.getElementById('timeSelect');
 const noticeBox = document.getElementById('doctorScheduleNotice');
 const shiftTime = document.getElementById('shiftTime');
 
+let currentDate = new Date();
+
+// Render Calendar Widget
+function renderCalendar() {
+    const monthYearText = document.getElementById('calendarMonthYear');
+    const calendarDays = document.getElementById('calendarDays');
+
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+
+    monthYearText.textContent = `${monthNames[month]} ${year}`;
+    calendarDays.innerHTML = "";
+
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const totalDays = new Date(year, month + 1, 0).getDate();
+
+    // Fill blank padding days
+    for (let i = 0; i < firstDayIndex; i++) {
+        const emptyDiv = document.createElement('div');
+        emptyDiv.classList.add('calendar-day', 'empty');
+        calendarDays.appendChild(emptyDiv);
+    }
+
+    // Fill-up sa month
+    for (let day = 1; day <= totalDays; day++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.classList.add('calendar-day');
+        dayDiv.textContent = day;
+
+        // gi format into string ang YYYY-MM-DD
+        const formattedMonth = String(month + 1).padStart(2, '0');
+        const formattedDay = String(day).padStart(2, '0');
+        const dateStr = `${year}-${formattedMonth}-${formattedDay}`;
+
+        // Add red dot if any appointment exists on this day
+        const hasBooking = existingAppointments.some(app => app.appointment_date === dateStr && app.status !== 'Cancelled');
+        if (hasBooking) {
+            dayDiv.classList.add('has-booking');
+        }
+
+        // Highlight selected date matching dateInput
+        if (dateInput.value === dateStr) {
+            dayDiv.classList.add('selected');
+        }
+
+        // clicker sa day
+        dayDiv.addEventListener('click', () => {
+            dateInput.value = dateStr;
+            updateAvailableSlots();
+            renderCalendar();
+        });
+
+        calendarDays.appendChild(dayDiv);
+    }
+}
+
+// ma render ang upcoming list
+function renderUpcoming() {
+    const upcomingList = document.getElementById('upcomingList');
+    upcomingList.innerHTML = "";
+
+    if (existingAppointments.length === 0) {
+        upcomingList.innerHTML = `<p style="font-size:12px; color:#888;">No upcoming appointments.</p>`;
+        return;
+    }
+
+    // appointment
+    const upcoming = existingAppointments.slice(0, 3);
+    upcoming.forEach(app => {
+        const initial = app.patient_name ? app.patient_name.charAt(0).toUpperCase() : 'A';
+        const item = document.createElement('div');
+        item.classList.add('upcoming-item');
+        item.innerHTML = `
+            <div class="upcoming-avatar">${initial}</div>
+            <div class="upcoming-info">
+                <div class="upcoming-title">${app.patient_name} with ${app.doctor_name}</div>
+                <div class="upcoming-time">${app.appointment_date} | ${app.appointment_time}</div>
+            </div>
+        `;
+        upcomingList.appendChild(item);
+    });
+}
+
 function updateAvailableSlots() {
     const selectedDoctorId = doctorSelect.value;
     const selectedDate = dateInput.value;
 
-    // 1. makita ang info sa doctor
     const selectedOption = doctorSelect.options[doctorSelect.selectedIndex];
     if (selectedDoctorId && selectedOption.dataset.start) {
         shiftTime.textContent = selectedOption.dataset.start + ' - ' + selectedOption.dataset.end;
@@ -257,7 +341,6 @@ function updateAvailableSlots() {
         noticeBox.style.display = 'none';
     }
 
-    // 2. disable ang time na gi book na sa client
     Array.from(timeSelect.options).forEach(option => {
         if (!option.value) return;
 
@@ -280,8 +363,25 @@ function updateAvailableSlots() {
     });
 }
 
+// diri ma control ang calendar
+document.getElementById('prevMonth').addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+});
+document.getElementById('nextMonth').addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+});
+
 doctorSelect.addEventListener('change', updateAvailableSlots);
-dateInput.addEventListener('change', updateAvailableSlots);
+dateInput.addEventListener('change', () => {
+    updateAvailableSlots();
+    renderCalendar();
+});
+
+// Initial Setup
+renderCalendar();
+renderUpcoming();
 </script>
 
 </body>

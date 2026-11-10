@@ -20,7 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_appointment'])) 
     $date         = $_POST['appointment_date'];
     $time         = $_POST['appointment_time'];
 
-    if (!empty($patient_name) && !empty($email) && !empty($phone) &&
+    // Check if selected date falls on a weekend (Sunday = 0, Saturday = 6)
+    $day_of_week = date('w', strtotime($date));
+
+    if ($day_of_week == 0 || $day_of_week == 6) {
+        $message = "Booking failed: Appointments are not allowed on weekends (Saturday & Sunday). Please select a weekday.";
+        $message_type = "error";
+    } elseif (!empty($patient_name) && !empty($email) && !empty($phone) &&
         $doctor_id > 0 && !empty($date) && !empty($time)) {
 
         // Fetch existing patient by Email
@@ -128,6 +134,12 @@ $appointments = getAllAppointments($conn);
                     <label>Date</label>
                     <input type="date" name="appointment_date" id="dateInput" required min="<?= date('Y-m-d') ?>">
                 </div>
+
+                <!-- Instant Weekend Warning Notice -->
+                <div id="weekendNotice" style="display:none; background:#fff1f0; color:#b63f38; padding:10px; border-radius:6px; margin-bottom:15px; font-size:13px; border:1px solid #f2d8d5;">
+                    <strong>⚠️ Notice:</strong> Bookings are not allowed on weekends (Saturday & Sunday). Please choose a weekday.
+                </div>
+
                 <div class="form-group">
                     <label>Time Slot</label>
                     <select name="appointment_time" id="timeSelect" required>
@@ -145,7 +157,7 @@ $appointments = getAllAppointments($conn);
                         <option value="05:00 PM">05:00 PM</option>
                     </select>
                 </div>
-                <button type="submit" name="book_appointment" class="btn">Confirm Booking</button>
+                <button type="submit" name="book_appointment" id="submitBtn" class="btn">Confirm Booking</button>
             </form>
         </div>
 
@@ -182,7 +194,7 @@ $appointments = getAllAppointments($conn);
             </div>
         </div>
 
-      <!-- Column 3: Scheduled Appointments Table & Patient Info -->
+        <!-- Column 3: Scheduled Appointments Table & Patient Info -->
         <div class="card">
             <h2>Scheduled Appointments</h2>
             <div class="table-responsive">
@@ -192,9 +204,8 @@ $appointments = getAllAppointments($conn);
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Patient</th>
                                 <th>Doctor</th>
+                                <th>Specialist / Department</th>
                                 <th>Date</th>
                                 <th>Time</th>
                                 <th>Status</th>
@@ -202,13 +213,31 @@ $appointments = getAllAppointments($conn);
                         </thead>
                         <tbody>
                             <?php foreach ($appointments as $app): ?>
+                                <?php 
+                                    // Match doctor's department dynamically safely using doctor name or existing keys
+                                    $dept = $app['dept_name'] ?? $app['department_name'] ?? $app['specialization'] ?? '';
+                                    if (empty($dept)) {
+                                        foreach ($doctors as $d) {
+                                            $appDocName = $app['doctor_name'] ?? '';
+                                            $appDocId   = $app['doctor_id'] ?? null;
+                                            
+                                            if (($appDocId !== null && $d['doctor_id'] == $appDocId) || 
+                                                (!empty($appDocName) && strtolower($d['name']) === strtolower($appDocName))) {
+                                                $dept = $d['dept_name'] ?? $d['department_name'] ?? 'General Medicine';
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (empty($dept)) {
+                                        $dept = 'General Medicine';
+                                    }
+                                ?>
                                 <tr>
-                                    <td>#<?= $app['appointment_id'] ?></td>
-                                    <td><?= htmlspecialchars($app['patient_name']) ?></td>
-                                    <td><?= htmlspecialchars($app['doctor_name']) ?></td>
-                                    <td><?= htmlspecialchars($app['appointment_date']) ?></td>
-                                    <td><?= htmlspecialchars($app['appointment_time']) ?></td>
-                                    <td><span class="badge"><?= htmlspecialchars($app['status']) ?></span></td>
+                                    <td><strong><?= htmlspecialchars($app['doctor_name'] ?? '') ?></strong></td>
+                                    <td><?= htmlspecialchars($dept) ?></td>
+                                    <td><?= htmlspecialchars($app['appointment_date'] ?? '') ?></td>
+                                    <td><?= htmlspecialchars($app['appointment_time'] ?? '') ?></td>
+                                    <td><span class="badge"><?= htmlspecialchars($app['status'] ?? 'Booked') ?></span></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -220,8 +249,8 @@ $appointments = getAllAppointments($conn);
             <div class="clinic-notice-box">
                 <div class="notice-section">
                     <h3>⏰ Clinic Operating Hours</h3>
-                    <p><strong>Monday – Saturday:</strong> 8:00 AM – 5:00 PM</p>
-                    <p><strong>Sunday & Holidays:</strong> Closed for Routine Consultations</p>
+                    <p><strong>Monday – Friday:</strong> 8:00 AM – 5:00 PM</p>
+                    <p><strong>Saturday & Sunday:</strong> Closed for Routine Consultations</p>
                 </div>
                 
                 <div class="notice-section emergency">
@@ -230,6 +259,9 @@ $appointments = getAllAppointments($conn);
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
 <script>
 const existingAppointments = <?= json_encode($appointments); ?>;
 const doctorSelect = document.getElementById('doctorSelect');
@@ -237,10 +269,35 @@ const dateInput = document.getElementById('dateInput');
 const timeSelect = document.getElementById('timeSelect');
 const noticeBox = document.getElementById('doctorScheduleNotice');
 const shiftTime = document.getElementById('shiftTime');
+const weekendNotice = document.getElementById('weekendNotice');
+const submitBtn = document.getElementById('submitBtn');
 
 function updateAvailableSlots() {
     const selectedDoctorId = doctorSelect.value;
     const selectedDate = dateInput.value;
+
+    // Check for Weekend Selection (Sunday = 0, Saturday = 6)
+    if (selectedDate) {
+        const dateObj = new Date(selectedDate + 'T00:00:00');
+        const dayOfWeek = dateObj.getDay();
+
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            weekendNotice.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.5';
+            submitBtn.style.cursor = 'not-allowed';
+        } else {
+            weekendNotice.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+        }
+    } else {
+        weekendNotice.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+    }
 
     const selectedOption = doctorSelect.options[doctorSelect.selectedIndex];
     if (selectedDoctorId && selectedOption.dataset.start) {
@@ -254,7 +311,7 @@ function updateAvailableSlots() {
         if (!option.value) return;
 
         const isBooked = existingAppointments.some(app => 
-            app.doctor_id == selectedDoctorId && 
+            (app.doctor_id == selectedDoctorId || (app.doctor_name && selectedOption && selectedOption.textContent.includes(app.doctor_name))) && 
             app.appointment_date === selectedDate && 
             app.appointment_time === option.value &&
             app.status !== 'Cancelled'

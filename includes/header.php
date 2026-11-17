@@ -8,20 +8,293 @@ $base_path = $in_subfolder ? '../' : '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($page_title) ? htmlspecialchars($page_title) : 'Clinic Appointment System' ?></title>
-    <link rel="stylesheet" href="/clinic/css/style.css?v=2">
+    <link rel="stylesheet" href="<?= $base_path ?>css/style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+        .navbar {
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .logo span {
+            color: #38bdf8;
+        }
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            margin-left: 1.5rem;
+            font-weight: 500;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        .hero {
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-size: 1.8rem;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+        .hero p {
+            color: #64748b;
+        }
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+        @media (max-width: 860px) {
+            .dashboard-layout { grid-template-columns: 1fr; }
+        }
+        .panel {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .panel-header h2 {
+            font-size: 1.2rem;
+            color: #0f172a;
+        }
+        .search-input, #datePicker {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .dept-filters {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+        .filter-pill {
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            padding: 0.4rem 0.85rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+        }
+        .filter-pill.active {
+            background: #0f62fe;
+            color: #ffffff;
+            border-color: #0f62fe;
+        }
+        .doctor-cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .doctor-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .doctor-item:hover {
+            border-color: #93c5fd;
+            background: #f8fafc;
+        }
+        .doctor-item.selected {
+            border-color: #0f62fe;
+            background: #eff6ff;
+        }
+        .doctor-item h3 {
+            margin-bottom: 0.3rem;
+            font-size: 1rem;
+        }
+        .badge {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+        .hours-tag {
+            text-align: right;
+            font-size: 0.82rem;
+            color: #475569;
+        }
+        .hours-tag small {
+            display: block;
+            color: #94a3b8;
+        }
+        .date-strip {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.45rem;
+            margin-bottom: 1.2rem;
+        }
+        .date-tab {
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 0.55rem 0.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .date-tab span {
+            display: block;
+            font-size: 0.72rem;
+            color: #64748b;
+        }
+        .date-tab strong {
+            font-size: 0.95rem;
+        }
+        .date-tab.active {
+            background: #0f62fe;
+            color: #ffffff;
+            border-color: #0f62fe;
+        }
+        .date-tab.active span {
+            color: #dbeafe;
+        }
+        .slot-legend {
+            display: flex;
+            gap: 1.25rem;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+        .slot-legend .box {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+        .box.open { background: #10b981; }
+        .box.booked { background: #ef4444; }
+        .box.selected { background: #0f62fe; }
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+            gap: 0.75rem;
+        }
+        .slot-btn {
+            padding: 0.85rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .slot-btn small {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+        .slot-btn.open {
+            background: #ecfdf5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .slot-btn.open:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
+        }
+        .slot-btn.booked {
+            background: #fef2f2;
+            border-color: #ef4444;
+            color: #991b1b;
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+        .slot-btn.picked {
+            background: #0f62fe !important;
+            border-color: #0043ce !important;
+            color: #ffffff !important;
+        }
+        .ticket-bar {
+            margin-top: 1.5rem;
+            padding: 1rem 1.25rem;
+            background: #f8fafc;
+            border: 2px solid #0f62fe;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+        .ticket-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #0f62fe;
+            letter-spacing: 0.5px;
+        }
+        .btn-book {
+            background: #0f62fe;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.65rem 1.15rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .btn-book:hover {
+            background: #0043ce;
+        }
+    </style>
 </head>
 <body>
 
 <nav class="navbar">
     <div class="logo">
-        <a href="/clinic/index.php" style="color: inherit; text-decoration: none;">
+        <a href="<?= $base_path ?>index.php" style="color: inherit; text-decoration: none;">
             Clinic <span>Appointment System</span>
         </a>
     </div>
 
     <div class="nav-links">
-        <a href="/clinic/index.php">Dashboard</a>
-        <a href="/clinic/patient/my_appointments.php">My Appointments</a>
-        <a href="/clinic/admin/login.php">Admin</a>
+        <a href="<?= $base_path ?>index.php">Dashboard</a>
+        <a href="<?= $base_path ?>patient/my_appointments.php">My Appointments</a>
+        <a href="<?= $base_path ?>admin/login.php">Admin</a>
     </div>
 </nav>

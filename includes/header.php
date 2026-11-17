@@ -9,14 +9,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($page_title) ? htmlspecialchars($page_title) : 'Clinic Appointment System' ?></title>
-    <link rel="stylesheet" href="<?= $base_path ?>css/style.css">
+    <link rel="stylesheet" href="<?= $base_path ?>css/style.css?v=6">
     <style>
         :root {
-            --nav-bg: #0f172a;
-            --nav-accent: #38bdf8;
-            --primary: #0f62fe;
-            --primary-hover: #0043ce;
-            --page-bg: #f1f5f9;
+            --nav-bg: #064e3b;
+            --nav-accent: #6ee7b7;
+            --primary: #059669;
+            --primary-hover: #047857;
+            --page-bg: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #1e293b;
             --text-muted: #64748b;
@@ -41,9 +41,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
             line-height: 1.5;
         }
 
-        /* --- MODERN STICKY HEADER --- */
+        /* --- GREEN & WHITE STICKY NAVBAR --- */
         .navbar {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
             color: #ffffff;
             padding: 0.9rem 2rem;
             display: flex;
@@ -51,7 +51,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             align-items: center;
             flex-wrap: wrap;
             gap: 1rem;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+            box-shadow: 0 4px 12px rgba(6, 78, 59, 0.18);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -68,17 +68,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .brand-icon {
-            background: var(--primary);
-            color: #ffffff;
+            background: #ffffff;
+            color: var(--primary);
             width: 34px;
             height: 34px;
             border-radius: 8px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 1.1rem;
-            box-shadow: 0 2px 6px rgba(15, 98, 254, 0.4);
+            font-weight: 900;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
 
         .brand span {
@@ -93,7 +93,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .nav-links a {
-            color: #cbd5e1;
+            color: #d1fae5;
             text-decoration: none;
             padding: 0.5rem 0.95rem;
             border-radius: 8px;
@@ -103,32 +103,39 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.12);
             color: #ffffff;
         }
 
         .nav-links a.active {
-            background: var(--primary);
-            color: #ffffff;
-            font-weight: 600;
+            background: #ffffff;
+            color: #064e3b;
+            font-weight: 700;
         }
-
         .nav-links a.admin-pill {
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            color: var(--nav-accent);
-            margin-left: 0.25rem;
+            color: rgba(209, 250, 229, 0.45);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 0.35rem 0.65rem;
+            margin-left: 0.5rem;
+            border: none;
         }
 
         .nav-links a.admin-pill:hover {
-            background: rgba(56, 189, 248, 0.15);
             color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
         }
 
         /* --- MAIN CONTAINER & HERO --- */
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
+            margin: 1.5rem auto;
             padding: 0 1.5rem;
+        }
+
+        .matrix-page-container {
+            margin-top: 1rem !important;
+            margin-bottom: 1rem !important;
         }
 
         .hero {
@@ -137,7 +144,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         .hero h1 {
             font-size: 1.8rem;
-            color: #0f172a;
+            color: #064e3b;
             margin-bottom: 0.35rem;
         }
 
@@ -145,7 +152,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             color: var(--text-muted);
         }
 
-        /* --- TWO-COLUMN DASHBOARD LAYOUT (Used on patient/dashboard.php) --- */
+        /* --- TWO-COLUMN DASHBOARD LAYOUT --- */
         .dashboard-layout {
             display: grid;
             grid-template-columns: 1fr 1.3fr;
@@ -161,9 +168,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         .panel, .card, .form-container {
             background: var(--card-bg);
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 16px rgba(6, 78, 59, 0.05);
             margin-bottom: 1.5rem;
         }
 
@@ -177,7 +185,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         .panel-header h2, .card h2 {
             font-size: 1.2rem;
-            color: #0f172a;
+            color: #064e3b;
         }
 
         /* --- INPUTS & FORMS --- */
@@ -190,6 +198,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
             margin-top: 0.3rem;
             margin-bottom: 1rem;
             background: #ffffff;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
         }
 
         .panel-header input, .panel-header select {
@@ -205,34 +219,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         .badge {
             display: inline-block;
-            background: #e0f2fe;
-            color: #0369a1;
+            background: #d1fae5;
+            color: #065f46;
             padding: 0.2rem 0.65rem;
             border-radius: 6px;
             font-size: 0.78rem;
-            font-weight: 600;
+            font-weight: 700;
         }
 
-        .filter-pill {
-            border: 1px solid #cbd5e1;
-            background: #f8fafc;
-            padding: 0.45rem 0.95rem;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #334155;
-            transition: 0.15s;
-        }
-
-        /* --- COURT-BOOKING STYLE SCHEDULE MATRIX --- */
+        /* --- SCHEDULE MATRIX --- */
         .matrix-topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 1rem;
-            padding-bottom: 1rem;
+            padding-bottom: 0.85rem;
             border-bottom: 1px solid #e2e8f0;
         }
 
@@ -243,7 +245,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .today-pill {
-            background: #1e293b;
+            background: var(--primary);
             color: #ffffff;
             font-size: 0.75rem;
             font-weight: 700;
@@ -274,14 +276,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
             justify-content: center;
             font-size: 1.15rem;
             font-weight: 700;
-            color: #334155;
+            color: #064e3b;
             cursor: pointer;
             margin: 0;
             position: relative;
         }
 
         .icon-nav-btn:hover {
-            background: #f1f5f9;
+            background: #ecfdf5;
+            border-color: var(--green-border);
         }
 
         .calendar-trigger input[type="date"] {
@@ -309,12 +312,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .schedule-matrix th {
-            background: #f8fafc;
-            color: #0f172a;
+            background: #f0fdf4;
+            color: #064e3b;
             text-transform: none;
             text-align: center;
-            padding: 0.85rem 0.75rem;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid #bbf7d0;
             border-right: 1px solid #e2e8f0;
             font-size: 0.92rem;
         }
@@ -322,50 +325,50 @@ $current_page = basename($_SERVER['PHP_SELF']);
         .schedule-matrix th:first-child {
             text-align: left;
             width: 175px;
-            background: #f8fafc;
         }
 
         .schedule-matrix th small {
             display: block;
-            font-weight: 500;
-            color: #64748b;
+            font-weight: 600;
+            color: #059669;
             font-size: 0.78rem;
             margin-top: 2px;
         }
 
         .shift-divider td {
-            background: #e2e8f0 !important;
-            color: #475569;
+            background: #ecfdf5 !important;
+            color: #065f46;
             font-weight: 700;
-            font-size: 0.82rem;
-            padding: 0.45rem 0.85rem;
-            letter-spacing: 0.3px;
+            font-size: 0.8rem;
+            padding: 0.4rem 0.85rem;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid #d1fae5;
         }
 
         .schedule-matrix td {
-            padding: 0.55rem;
+            padding: 0.35rem 0.45rem;
             border-bottom: 1px solid #e2e8f0;
             border-right: 1px solid #e2e8f0;
             vertical-align: middle;
         }
 
         .time-col {
-            background: #fffbeb !important;
-            font-size: 0.85rem;
+            background: #ffffff !important;
+            font-size: 0.84rem;
             color: #334155;
             white-space: nowrap;
         }
 
         .time-col strong {
             display: block;
-            color: #0f62fe;
+            color: var(--primary);
             font-size: 0.82rem;
-            margin-top: 2px;
+            margin-top: 1px;
         }
 
         .matrix-cell-btn {
             width: 100%;
-            height: 44px;
+            height: 35px;
             border-radius: 8px;
             font-weight: 600;
             font-size: 0.82rem;
@@ -375,20 +378,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .matrix-cell-btn.available {
-            background: var(--green-bg);
-            border-color: var(--green-border);
-            color: var(--green-text);
+            background: #ffffff;
+            border-color: #10b981;
+            color: #065f46;
         }
 
         .matrix-cell-btn.available:hover {
-            background: #d1fae5;
+            background: #ecfdf5;
             transform: scale(1.02);
         }
 
         .matrix-cell-btn.booked {
-            background: #e2e8f0;
-            border-color: #cbd5e1;
-            color: #64748b;
+            background: var(--red-bg);
+            border-color: var(--red-border);
+            color: var(--red-text);
             cursor: not-allowed;
         }
 
@@ -401,8 +404,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         .matrix-cell-btn.picked {
             background: var(--primary) !important;
-            border-color: var(--primary-hover) !important;
+            border-color: #064e3b !important;
             color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
         }
 
         /* --- SLOT LEGEND --- */
@@ -411,7 +415,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             gap: 1.25rem;
             flex-wrap: wrap;
             font-size: 0.85rem;
-            margin-bottom: 1rem;
             color: #475569;
         }
 
@@ -424,83 +427,177 @@ $current_page = basename($_SERVER['PHP_SELF']);
             vertical-align: middle;
         }
 
-        .box.open, .box.available { background: var(--green-border); }
-        .box.booked { background: #94a3b8; }
+        .box.open, .box.available { background: #ffffff; border: 1.5px solid #10b981; }
+        .box.booked { background: var(--red-border)}
         .box.selected { background: var(--primary); }
-        .box.offduty { background: #e2e8f0; border: 1px solid #cbd5e1; }
+        .box.offduty { background: #f1f5f9; border: 1px solid #e2e8f0; }
 
-        /* --- MINI SLOTS GRID (Used on patient/dashboard.php) --- */
-        .slots-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
-            gap: 0.75rem;
-            margin: 1rem 0;
+        /* --- STICKY BOTTOM BAR --- */
+        .sticky-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border-top: 1px solid #d1fae5;
+            box-shadow: 0 -4px 20px rgba(6, 78, 59, 0.12);
+            padding: 0.9rem 1rem;
+            z-index: 950;
         }
 
-        .slot-btn {
-            padding: 0.85rem 0.5rem;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-align: center;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: 0.15s;
+        .sticky-bar-inner {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .slot-btn small {
-            display: block;
+        /* --- IN-PAGE BOOKING MODAL POPUP --- */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.78);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 2000;
+        }
+    .modal-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 520px;
+            border-radius: 16px;
+            border: 1px solid #e2e8f0;
+            border-top: 5px solid var(--primary);
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 1.25rem 1.5rem 0.85rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-step-tag {
             font-size: 0.72rem;
-            font-weight: 600;
-            margin-top: 3px;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.6px;
         }
 
-        .slot-btn.open, .slot-btn.available {
-            background-color: var(--green-bg) !important;
-            border-color: var(--green-border) !important;
-            color: var(--green-text) !important;
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            line-height: 1;
+            color: #64748b;
+            cursor: pointer;
         }
 
-        .slot-btn.open:hover, .slot-btn.available:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+        .modal-progress-track {
+            height: 3px;
+            background: #e2e8f0;
+            width: 100%;
         }
 
-        .slot-btn.booked {
-            background-color: var(--red-bg) !important;
-            border-color: var(--red-border) !important;
-            color: var(--red-text) !important;
-            cursor: not-allowed;
-            opacity: 0.85;
+        .modal-progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.25s ease;
         }
 
-        .slot-btn.picked, .slot-btn.selected {
-            background-color: var(--primary) !important;
-            border-color: var(--primary-hover) !important;
-            color: #ffffff !important;
+        .modal-body {
+            padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
-        /* --- TICKET BAR & BUTTONS --- */
-        .ticket-bar {
-            margin-top: 1.5rem;
-            padding: 1rem 1.25rem;
+        .summary-box {
+            border: 1px solid #d1fae5;
             background: #f8fafc;
-            border: 2px solid var(--primary);
-            border-radius: 10px;
+            border-radius: 12px;
+            padding: 1rem 1.15rem;
+        }
+
+        .summary-section-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #065f46;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.65rem;
+        }
+
+        .summary-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 1rem;
+            padding: 0.4rem 0;
+            font-size: 0.9rem;
+            color: #475569;
         }
 
-        .ticket-label {
-            display: block;
+        .summary-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.75rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid #d1fae5;
+            font-weight: 700;
+            color: #064e3b;
+        }
+
+        .duration-pill {
+            display: inline-block;
+            background: #d1fae5;
+            color: #065f46;
             font-size: 0.72rem;
             font-weight: 700;
-            color: var(--primary);
-            letter-spacing: 0.5px;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            margin-left: 0.35rem;
         }
 
+        .modal-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+
+        .btn-navy {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-navy:hover {
+            background: var(--primary-hover);
+        }
+
+        /* --- GENERAL BUTTONS --- */
         .btn, .btn-book, button[type="submit"] {
             display: inline-block;
             background: var(--primary);
@@ -509,7 +606,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             padding: 0.7rem 1.25rem;
             border: none;
             border-radius: 8px;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.92rem;
             cursor: pointer;
             transition: background 0.2s;
@@ -545,7 +642,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         table:not(.schedule-matrix) th {
-            background: #0f172a;
+            background: #064e3b;
             color: #ffffff;
             text-align: left;
             padding: 0.9rem 1rem;
@@ -561,11 +658,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         table:not(.schedule-matrix) tr:hover td {
-            background: #f8fafc;
+            background: #f0fdf4;
         }
 
         .status-booked { background: #dcfce7; color: #166534; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
-        .status-completed { background: #dbeafe; color: #1e40af; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
+        .status-completed { background: #d1fae5; color: #065f46; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
         .status-cancelled { background: #fee2e2; color: #991b1b; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
 
         /* --- ALERTS --- */
@@ -577,132 +674,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
         .alert.success, .success { background: #dcfce7; color: #166534; border: 1px solid #22c55e; }
         .alert.error, .error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
-   /* --- IN-PAGE BOOKING MODAL POPUP --- */
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.65);
-            backdrop-filter: blur(3px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            z-index: 2000;
-        }
-        .modal-card {
-            background: #ffffff;
-            width: 100%;
-            max-width: 520px;
-            border-radius: 16px;
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-            overflow: hidden;
-        }
-        .modal-header {
-            padding: 1.25rem 1.5rem 0.85rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-        .modal-step-tag {
-            font-size: 0.72rem;
-            font-weight: 800;
-            color: #64748b;
-            letter-spacing: 0.6px;
-        }
-        .modal-close-btn {
-            background: none;
-            border: none;
-            font-size: 1.6rem;
-            line-height: 1;
-            color: #64748b;
-            cursor: pointer;
-        }
-        .modal-progress-track {
-            height: 3px;
-            background: #e2e8f0;
-            width: 100%;
-        }
-        .modal-progress-fill {
-            height: 100%;
-            background: #1e293b;
-            transition: width 0.25s ease;
-        }
-        .modal-body {
-            padding: 1.25rem 1.5rem 1.5rem 1.5rem;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        .summary-box {
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 1rem 1.15rem;
-        }
-        .summary-section-title {
-            font-size: 0.72rem;
-            font-weight: 800;
-            color: #64748b;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.65rem;
-        }
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.4rem 0;
-            font-size: 0.9rem;
-            color: #475569;
-        }
-        .summary-total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 0.75rem;
-            margin-top: 0.5rem;
-            border-top: 1px solid #e2e8f0;
-            font-weight: 700;
-            color: #0f172a;
-        }
-        .duration-pill {
-            display: inline-block;
-            background: #e0f2fe;
-            color: #0369a1;
-            font-size: 0.72rem;
-            font-weight: 700;
-            padding: 0.15rem 0.5rem;
-            border-radius: 12px;
-            margin-left: 0.35rem;
-        }
-        .modal-footer {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
-        }
-        .btn-outline {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            color: #1e293b;
-            padding: 0.7rem 1rem;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .btn-outline:hover {
-            background: #f8fafc;
-        }
-        .btn-navy {
-            background: #172554;
-            color: #ffffff;
-            border: none;
-            padding: 0.7rem 1rem;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .btn-navy:hover {
-            background: #1e3a8a;
-        }
-   </style>
+    </style>
 </head>
 <body>
 

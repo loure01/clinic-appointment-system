@@ -120,9 +120,9 @@ require_once 'includes/header.php';
 <div class="sticky-bottom-bar" id="ticketBar" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-top: 1px solid #cbd5e1; box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.12); padding: 1rem; z-index: 950;">
         <div class="sticky-bar-inner" style="width: 100%; display: flex; justify-content: center; align-items: center;">
             <span id="ticketDetails" style="display: none;"></span>
-            <button type="button" id="openModalBtn" class="btn-book" style="border-radius: 999px; padding: 1.1rem 4.5rem; font-size: 1.35rem; font-weight: 800; letter-spacing: 1px; box-shadow: 0 6px 18px rgba(15, 98, 254, 0.35);">
-                BOOK NOW
-            </button>
+           <button type="button" id="openModalBtn" class="btn-book" style="border-radius: 999px; padding: 1.1rem 4.5rem; font-size: 1.35rem; font-weight: 800; letter-spacing: 1px; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35);">
+    BOOK NOW
+</button>
         </div>
     </div>
 

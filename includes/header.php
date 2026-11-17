@@ -49,6 +49,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
             position: sticky;
             top: 0;
@@ -63,7 +65,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             color: #ffffff;
             font-size: 1.25rem;
             font-weight: 700;
-            letter-spacing: -0.3px;
         }
 
         .brand-icon {
@@ -88,6 +89,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            flex-wrap: wrap;
         }
 
         .nav-links a {
@@ -114,14 +116,593 @@ $current_page = basename($_SERVER['PHP_SELF']);
         .nav-links a.admin-pill {
             border: 1px solid rgba(56, 189, 248, 0.4);
             color: var(--nav-accent);
-            margin-left: 0.5rem;
+            margin-left: 0.25rem;
         }
 
         .nav-links a.admin-pill:hover {
             background: rgba(56, 189, 248, 0.15);
             color: #ffffff;
         }
-    </style>
+
+        /* --- MAIN CONTAINER & HERO --- */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .hero {
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 1.8rem;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+        }
+
+        /* --- TWO-COLUMN DASHBOARD LAYOUT (Used on patient/dashboard.php) --- */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 860px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel, .card, .form-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .panel-header h2, .card h2 {
+            font-size: 1.2rem;
+            color: #0f172a;
+        }
+
+        /* --- INPUTS & FORMS --- */
+        input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="password"], select, textarea {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.92rem;
+            margin-top: 0.3rem;
+            margin-bottom: 1rem;
+            background: #ffffff;
+        }
+
+        .panel-header input, .panel-header select {
+            width: auto;
+            margin: 0;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 0.2rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .filter-pill {
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            padding: 0.45rem 0.95rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #334155;
+            transition: 0.15s;
+        }
+
+        /* --- COURT-BOOKING STYLE SCHEDULE MATRIX --- */
+        .matrix-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .date-title-group {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+        }
+
+        .today-pill {
+            background: #1e293b;
+            color: #ffffff;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.65rem;
+            border-radius: 20px;
+        }
+
+        .matrix-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-btn-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .icon-nav-btn {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #334155;
+            cursor: pointer;
+            margin: 0;
+            position: relative;
+        }
+
+        .icon-nav-btn:hover {
+            background: #f1f5f9;
+        }
+
+        .calendar-trigger input[type="date"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .matrix-wrapper {
+            overflow-x: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
+
+        .schedule-matrix {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            box-shadow: none;
+            min-width: 760px;
+        }
+
+        .schedule-matrix th {
+            background: #f8fafc;
+            color: #0f172a;
+            text-transform: none;
+            text-align: center;
+            padding: 0.85rem 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            font-size: 0.92rem;
+        }
+
+        .schedule-matrix th:first-child {
+            text-align: left;
+            width: 175px;
+            background: #f8fafc;
+        }
+
+        .schedule-matrix th small {
+            display: block;
+            font-weight: 500;
+            color: #64748b;
+            font-size: 0.78rem;
+            margin-top: 2px;
+        }
+
+        .shift-divider td {
+            background: #e2e8f0 !important;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.82rem;
+            padding: 0.45rem 0.85rem;
+            letter-spacing: 0.3px;
+        }
+
+        .schedule-matrix td {
+            padding: 0.55rem;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .time-col {
+            background: #fffbeb !important;
+            font-size: 0.85rem;
+            color: #334155;
+            white-space: nowrap;
+        }
+
+        .time-col strong {
+            display: block;
+            color: #0f62fe;
+            font-size: 0.82rem;
+            margin-top: 2px;
+        }
+
+        .matrix-cell-btn {
+            width: 100%;
+            height: 44px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.82rem;
+            border: 1.5px solid transparent;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .matrix-cell-btn.available {
+            background: var(--green-bg);
+            border-color: var(--green-border);
+            color: var(--green-text);
+        }
+
+        .matrix-cell-btn.available:hover {
+            background: #d1fae5;
+            transform: scale(1.02);
+        }
+
+        .matrix-cell-btn.booked {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+
+        .matrix-cell-btn.offduty {
+            background: #f8fafc;
+            border-color: #f1f5f9;
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .matrix-cell-btn.picked {
+            background: var(--primary) !important;
+            border-color: var(--primary-hover) !important;
+            color: #ffffff !important;
+        }
+
+        /* --- SLOT LEGEND --- */
+        .slot-legend {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            color: #475569;
+        }
+
+        .slot-legend .box {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+
+        .box.open, .box.available { background: var(--green-border); }
+        .box.booked { background: #94a3b8; }
+        .box.selected { background: var(--primary); }
+        .box.offduty { background: #e2e8f0; border: 1px solid #cbd5e1; }
+
+        /* --- MINI SLOTS GRID (Used on patient/dashboard.php) --- */
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .slot-btn {
+            padding: 0.85rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .slot-btn small {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+
+        .slot-btn.open, .slot-btn.available {
+            background-color: var(--green-bg) !important;
+            border-color: var(--green-border) !important;
+            color: var(--green-text) !important;
+        }
+
+        .slot-btn.open:hover, .slot-btn.available:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+        }
+
+        .slot-btn.booked {
+            background-color: var(--red-bg) !important;
+            border-color: var(--red-border) !important;
+            color: var(--red-text) !important;
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        .slot-btn.picked, .slot-btn.selected {
+            background-color: var(--primary) !important;
+            border-color: var(--primary-hover) !important;
+            color: #ffffff !important;
+        }
+
+        /* --- TICKET BAR & BUTTONS --- */
+        .ticket-bar {
+            margin-top: 1.5rem;
+            padding: 1rem 1.25rem;
+            background: #f8fafc;
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ticket-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+
+        .btn, .btn-book, button[type="submit"] {
+            display: inline-block;
+            background: var(--primary);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 0.7rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover, .btn-book:hover, button[type="submit"]:hover {
+            background: var(--primary-hover);
+        }
+
+        .btn-danger, .btn-cancel {
+            background: #ef4444;
+            color: #ffffff;
+            padding: 0.45rem 0.9rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .btn-danger:hover, .btn-cancel:hover {
+            background: #dc2626;
+        }
+
+        /* --- STANDARD TABLES & STATUS BADGES (My Appointments & Admin) --- */
+        table:not(.schedule-matrix) {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+            margin-top: 1rem;
+        }
+
+        table:not(.schedule-matrix) th {
+            background: #0f172a;
+            color: #ffffff;
+            text-align: left;
+            padding: 0.9rem 1rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        table:not(.schedule-matrix) td {
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.92rem;
+        }
+
+        table:not(.schedule-matrix) tr:hover td {
+            background: #f8fafc;
+        }
+
+        .status-booked { background: #dcfce7; color: #166534; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
+        .status-completed { background: #dbeafe; color: #1e40af; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
+
+        /* --- ALERTS --- */
+        .alert, .success, .error {
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 1.25rem;
+            font-weight: 600;
+        }
+        .alert.success, .success { background: #dcfce7; color: #166534; border: 1px solid #22c55e; }
+        .alert.error, .error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+   /* --- IN-PAGE BOOKING MODAL POPUP --- */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            z-index: 2000;
+        }
+        .modal-card {
+            background: #ffffff;
+            width: 100%;
+            max-width: 520px;
+            border-radius: 16px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 1.25rem 1.5rem 0.85rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .modal-step-tag {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #64748b;
+            letter-spacing: 0.6px;
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.6rem;
+            line-height: 1;
+            color: #64748b;
+            cursor: pointer;
+        }
+        .modal-progress-track {
+            height: 3px;
+            background: #e2e8f0;
+            width: 100%;
+        }
+        .modal-progress-fill {
+            height: 100%;
+            background: #1e293b;
+            transition: width 0.25s ease;
+        }
+        .modal-body {
+            padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .summary-box {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1rem 1.15rem;
+        }
+        .summary-section-title {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #64748b;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.65rem;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+        .summary-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.75rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid #e2e8f0;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .duration-pill {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            margin-left: 0.35rem;
+        }
+        .modal-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+        }
+        .btn-outline {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-outline:hover {
+            background: #f8fafc;
+        }
+        .btn-navy {
+            background: #172554;
+            color: #ffffff;
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-navy:hover {
+            background: #1e3a8a;
+        }
+   </style>
 </head>
 <body>
 

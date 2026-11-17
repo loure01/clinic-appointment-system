@@ -3,7 +3,7 @@
 </footer>
 
 <?php if (!empty($load_booking_js)): ?>
-    <script src="<?= $base_path ?>js/booking.js"></script>
+    <script src="<?= $base_path ?>js/booking.js?v=3"></script>
 <?php endif; ?>
 
 </body>

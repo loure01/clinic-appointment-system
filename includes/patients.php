@@ -1,26 +1,32 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
 
-function getOrCreatePatient($name, $email, $phone) {
-    global $pdo;
-    
-    $stmt = $pdo->prepare("SELECT patient_id FROM patients WHERE email = ?");
-    $stmt->execute([$email]);
-    $patient = $stmt->fetch();
+function getPatientByEmail($conn, $email) {
 
-    if ($patient) {
-        return $patient['patient_id'];
+    $stmt = $conn->prepare(
+        "SELECT * FROM patients WHERE email = ?"
+    );
+
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+
+    return $stmt->get_result()->fetch_assoc();
+}
+
+
+function createPatient($conn, $name, $email, $phone) {
+
+    $stmt = $conn->prepare(
+        "INSERT INTO patients (name, email, phone)
+         VALUES (?, ?, ?)"
+    );
+
+    $stmt->bind_param("sss", $name, $email, $phone);
+
+    if ($stmt->execute()) {
+        return $stmt->insert_id;
     }
 
-    $stmt = $pdo->prepare("INSERT INTO patients (name, email, phone) VALUES (?, ?, ?)");
-    $stmt->execute([$name, $email, $phone]);
-    return $pdo->lastInsertId();
+    return false;
 }
 
-function getPatientById($patient_id) {
-    global $pdo;
-    $stmt = $pdo->prepare("SELECT * FROM patients WHERE patient_id = ?");
-    $stmt->execute([$patient_id]);
-    return $stmt->fetch();
-}
 ?>

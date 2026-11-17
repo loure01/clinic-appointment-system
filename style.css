@@ -386,3 +386,149 @@ body {
 .btn-modal-cancel:hover { background: #e5e7eb; }
 .btn-modal-confirm { flex: 1; padding: 14px; background: var(--primary-green); border: none; color: #fff; border-radius: 8px; font-weight: 600; font-size: 15px; cursor: pointer; transition: background 0.2s; }
 .btn-modal-confirm:hover { background: var(--primary-green-hover); }
+/* --- Interactive Flight-Style Dashboard --- */
+.dashboard-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+@media (max-width: 860px) {
+    .dashboard-layout { grid-template-columns: 1fr; }
+}
+
+.panel {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.panel-header h2 { margin: 0; font-size: 1.2rem; }
+
+.search-input, #datePicker {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+/* Department Filter Pills */
+.dept-filters { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.filter-pill {
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    padding: 0.4rem 0.85rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.filter-pill.active { background: #0f62fe; color: #fff; border-color: #0f62fe; }
+
+/* Doctor Cards */
+.doctor-cards-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.doctor-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.doctor-item:hover { border-color: #93c5fd; background: #f8fafc; }
+.doctor-item.selected { border-color: #0f62fe; background: #eff6ff; }
+.doctor-item h3 { margin: 0 0 0.3rem 0; font-size: 1rem; }
+.badge {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.hours-tag { text-align: right; font-size: 0.82rem; color: #475569; }
+.hours-tag small { display: block; color: #94a3b8; }
+
+/* 7-Day Date Strip */
+.date-strip {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.45rem;
+    margin-bottom: 1.2rem;
+}
+.date-tab {
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    border-radius: 8px;
+    padding: 0.55rem 0.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.15s;
+}
+.date-tab span { display: block; font-size: 0.72rem; color: #64748b; }
+.date-tab strong { font-size: 0.95rem; }
+.date-tab.active { background: #0f62fe; color: #fff; border-color: #0f62fe; }
+.date-tab.active span { color: #dbeafe; }
+
+/* Legend */
+.slot-legend { display: flex; gap: 1.25rem; font-size: 0.85rem; margin-bottom: 1rem; color: #475569; }
+.slot-legend .box {
+    display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: middle;
+}
+.box.open { background: #10b981; }
+.box.booked { background: #ef4444; }
+.box.selected { background: #0f62fe; }
+
+/* Flight-Seat Style Slot Grid */
+.slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+}
+.slot-btn {
+    padding: 0.85rem 0.5rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: 0.15s;
+}
+.slot-btn small { display: block; font-size: 0.72rem; font-weight: 600; margin-top: 3px; }
+
+.slot-btn.open {
+    background: #ecfdf5; border-color: #10b981; color: #065f46;
+}
+.slot-btn.open:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+
+.slot-btn.booked {
+    background: #fef2f2; border-color: #ef4444; color: #991b1b;
+    cursor: not-allowed; opacity: 0.8;
+}
+.slot-btn.picked {
+    background: #0f62fe !important; border-color: #0043ce !important; color: #fff !important;
+}
+
+/* Ticket Confirmation Bar */
+.ticket-bar {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: #f8fafc;
+    border: 2px solid #0f62fe;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+.ticket-label { display: block; font-size: 0.72rem; font-weight: 700; color: #0f62fe; letter-spacing: 0.5px; }

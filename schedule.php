@@ -84,8 +84,10 @@ require_once 'includes/header.php';
     <div class="panel" style="padding: 1.15rem 1.35rem; margin-bottom: 4.5rem;">
         <div class="matrix-topbar">
             <div class="date-title-group">
-                <a href="index.php" class="icon-nav-btn" title="Back to Home" style="text-decoration: none; font-size: 0.9rem; width: auto; padding: 0 0.7rem;">&larr; Home</a>
-                <span style="font-size: 1.2rem;">📅</span>
+                <a href="index.php" class="icon-nav-btn" title="Back to Home" style="text-decoration: none; font-size: 0.85rem; width: auto; padding: 0 0.75rem;">&larr; Home</a>
+                <svg style="width: 20px; height: 20px; color: #059669;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                </svg>
                 <h1 id="matrixDateHeading" style="font-size: 1.3rem; color: #0f172a; margin: 0;">Tue, Nov 17</h1>
                 <span id="todayBadge" class="today-pill">Today</span>
             </div>
@@ -110,7 +112,9 @@ require_once 'includes/header.php';
                 <div class="nav-btn-group">
                     <button type="button" id="prevDayBtn" class="icon-nav-btn" title="Previous Weekday">&lsaquo;</button>
                     <label class="icon-nav-btn calendar-trigger" title="Select Date">
-                        📆
+                        <svg style="width: 17px; height: 17px; color: #064e3b;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                        </svg>
                         <input type="date" id="matrixDatePicker" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>">
                     </label>
                     <button type="button" id="nextDayBtn" class="icon-nav-btn" title="Next Weekday">&rsaquo;</button>
@@ -229,8 +233,11 @@ require_once 'includes/header.php';
                     <span class="status-booked">CONFIRMED</span>
                     <h2 style="font-size: 1.35rem; margin-top: 0.35rem;">Clinic Pass #<?= str_pad($booked_ticket['id'], 4, '0', STR_PAD_LEFT) ?></h2>
                     <?php if ($email_sent): ?>
-                        <p style="font-size: 0.82rem; color: #059669; font-weight: 600; margin-top: 0.25rem;">
-                            ✉️ Clinic Pass sent to <?= htmlspecialchars($booked_ticket['email']) ?>
+                        <p style="font-size: 0.82rem; color: #059669; font-weight: 600; margin-top: 0.25rem; display: flex; align-items: center; gap: 5px;">
+                            <svg style="width: 15px; height: 15px;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
+                            </svg>
+                            Clinic Pass sent to <?= htmlspecialchars($booked_ticket['email']) ?>
                         </p>
                     <?php endif; ?>
                 </div>

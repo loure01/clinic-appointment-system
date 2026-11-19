@@ -2,153 +2,119 @@
 require_once 'config/db.php';
 require_once 'includes/departments.php';
 require_once 'includes/doctors.php';
-require_once 'includes/patients.php';
-require_once 'includes/appointments.php';
-require_once 'includes/mailer.php';
-
-$booking_error = '';
-$booked_ticket = null;
-$email_sent    = false;
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_modal_booking'])) {
-    $name      = trim($_POST['patient_name'] ?? '');
-    $email     = trim($_POST['patient_email'] ?? '');
-    $phone     = trim($_POST['patient_phone'] ?? '');
-    $doctor_id = (int)($_POST['doctor_id'] ?? 0);
-    $date      = $_POST['appointment_date'] ?? '';
-    $time      = trim($_POST['appointment_time'] ?? '');
-    $amount    = 500.00;
-
-    $day_of_week = date('N', strtotime($date));
-    if ($day_of_week >= 6) {
-        $booking_error = "Clinic is closed on Saturdays and Sundays.";
-    } elseif ($name === '' || $email === '' || $phone === '' || $time === '') {
-        $booking_error = "Please complete all patient information fields.";
-    } else {
-        $current_booked = getBookedSlots($conn, $doctor_id, $date);
-        if (in_array($time, $current_booked)) {
-            $booking_error = "Sorry, that time slot was just booked by someone else.";
-        } else {
-            $patient = getPatientByEmail($conn, $email);
-            $patient_id = $patient ? $patient['patient_id'] : createPatient($conn, $name, $email, $phone);
-
-            if ($patient_id) {
-                $appt_id = createAppointment($conn, $patient_id, $doctor_id, $date, $time);
-                if ($appt_id) {
-                    $pay_stmt = $conn->prepare("INSERT INTO payments (appointment_id, amount, payment_status) VALUES (?, ?, 'Paid')");
-                    $pay_stmt->bind_param("id", $appt_id, $amount);
-                    $pay_stmt->execute();
-
-                    $doc_info = getDoctorById($conn, $doctor_id);
-                    $booked_ticket = [
-                        'id'      => $appt_id,
-                        'patient' => $name,
-                        'email'   => $email,
-                        'doctor'  => $doc_info['name'],
-                        'dept'    => $doc_info['dept_name'],
-                        'date'    => $date,
-                        'time'    => $time,
-                        'amount'  => $amount
-                    ];
-
-                    $email_sent = sendClinicPassEmail($booked_ticket);
-                } else {
-                    $booking_error = "Unable to complete booking. Please try again.";
-                }
-            }
-        }
-    }
-}
 
 $departments = getAllDepartments($conn);
 $doctors     = getAllDoctors($conn);
-$bookedMap   = getUpcomingBookedMap($conn);
 
-$page_title      = "Clinic Appointment System - Live Schedule";
-$load_booking_js = true;
+$doctorsByDept = [];
+foreach ($doctors as $doc) {
+    $deptName = $doc['dept_name'] ?? 'General Medicine';
+    $doctorsByDept[$deptName][] = $doc;
+}
 
+$specialtyDetails = [
+    'Cardiology' => [
+        'svg'  => '<svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 11.25h2.25l1.5-2.25 1.5 4.5 1.5-2.25h2.25"/></svg>',
+        'desc' => 'Comprehensive heart care, ECG diagnostics, blood pressure management, and cardiovascular consultations.'
+    ],
+    'General Medicine' => [
+        'svg'  => '<svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-3-3v6m-7.5 3.75h15A2.25 2.25 0 0021.75 16.5v-9A2.25 2.25 0 0019.5 5.25h-15A2.25 2.25 0 002.25 7.5v9A2.25 2.25 0 004.5 18.75z"/></svg>',
+        'desc' => 'Primary care for everyday health concerns, annual checkups, preventive screenings, and chronic condition care.'
+    ],
+    'Dental Care' => [
+        'svg'  => '<svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>',
+        'desc' => 'Complete oral health services including routine cleaning, restorative treatments, and preventive dental care.'
+    ],
+    'Dentistry' => [
+        'svg'  => '<svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"/></svg>',
+        'desc' => 'Complete oral health services including routine cleaning, restorative treatments, and preventive dental care.'
+    ],
+    'Pediatrics' => [
+        'svg'  => '<svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"/></svg>',
+        'desc' => 'Dedicated medical care for infants, children, and adolescents including wellness checks and immunizations.'
+    ],
+    'Dermatology' => [
+        'svg'  => '<svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>',
+        'desc' => 'Specialized diagnosis and treatment for skin, hair, and nail conditions with personalized care plans.'
+    ],
+    "Women's Health" => [
+        'svg'  => '<svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>',
+        'desc' => 'Compassionate OB-GYN consultations, prenatal guidance, and preventive wellness care at every stage of life.'
+    ]
+];
+
+$defaultSvg = '<svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>';
+
+$page_title = "Holy Clinic - Appointment System";
 require_once 'includes/header.php';
 ?>
 
-<main class="container matrix-page-container" 
-      id="bookingApp"
-      data-doctors='<?= htmlspecialchars(json_encode($doctors), ENT_QUOTES, "UTF-8") ?>'
-      data-booked='<?= htmlspecialchars(json_encode($bookedMap), ENT_QUOTES, "UTF-8") ?>'
-      data-today="<?= date('Y-m-d') ?>">
+<header class="w-full bg-white border-b border-slate-200/80 sticky top-0 z-40">
+    <div class="w-full max-w-7xl mx-auto px-6 sm:px-10 h-20 flex items-center justify-between">
+        <a href="index.php" class="flex items-center gap-3 text-slate-900 no-underline">
+            <img src="images/holy_clinic.png" alt="Holy Clinic Logo" class="w-11 h-11 rounded-xl object-cover shadow-sm border border-emerald-900/10">
+            <div>
+                <div class="font-extrabold text-xl leading-none text-slate-900">Holy Clinic</div>
+                <div class="text-xs font-medium text-emerald-600 tracking-wide mt-0.5">Medical & Wellness</div>
+            </div>
+        </a>
 
-    <?php if ($booking_error): ?>
-        <div class="alert error"><?= htmlspecialchars($booking_error) ?></div>
-    <?php endif; ?>
+        <nav class="hidden md:flex items-center gap-9 text-sm font-semibold text-slate-600">
+            <a href="#ourServicesSection" class="hover:text-emerald-600 transition">Our Services</a>
+            <a href="#howItWorksSection" class="hover:text-emerald-600 transition">How It Works</a>
+            <a href="#whyChooseUsSection" class="hover:text-emerald-600 transition">About Clinic</a>
+        </nav>
 
-    <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-50 via-emerald-50/40 to-teal-50/70 border border-slate-200/80 shadow-sm mb-6 p-6 md:p-10">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            <div class="lg:col-span-7 space-y-5">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+        <a href="index.php" title="Home" class="w-10 h-10 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 flex items-center justify-center transition">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
+            </svg>
+        </a>
+    </div>
+</header>
+
+<section class="w-full bg-gradient-to-r from-slate-50 via-emerald-50/50 to-teal-100/60 border-b border-slate-200/80">
+    <div class="w-full max-w-7xl mx-auto px-6 sm:px-10 py-14 md:py-20">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            <div class="lg:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-emerald-200 text-emerald-800 text-xs font-semibold shadow-xs">
                     <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
                     Trusted Care. Better Health.
                 </div>
 
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
                     Your Health<br>
                     <span class="text-emerald-600">Our Priority</span>
                 </h1>
 
-                <p class="text-slate-600 text-sm sm:text-base max-w-lg leading-relaxed">
-                    Compassionate care, advanced technology, and experienced specialists — all for a healthier you.
+                <p class="text-slate-600 text-base sm:text-lg max-w-xl leading-relaxed">
+                    Compassionate care, advanced technology, and experienced specialists — all for a healthier you. View real-time doctor availability and receive your Clinic Pass straight to your Gmail.
                 </p>
 
-                <div class="flex flex-wrap items-center gap-3 pt-1">
-                    <a href="#live-schedule-section" class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition">
+                <div class="flex flex-wrap items-center gap-4 pt-2">
+                    <a href="schedule.php" class="inline-flex items-center justify-center px-8 py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm sm:text-base shadow-md shadow-emerald-600/20 transition">
                         Book Appointment
                     </a>
-                    <a href="#live-schedule-section" onclick="document.getElementById('deptFilterSelect').focus();" class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm border border-slate-300 transition">
+                    <a href="#ourServicesSection" class="inline-flex items-center justify-center px-8 py-4 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm sm:text-base border border-slate-300 transition">
                         Our Services
                     </a>
                 </div>
-
-                <div class="grid grid-cols-3 gap-4 pt-4 border-t border-slate-200/70 max-w-md">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm shrink-0">
-                            🩺
-                        </div>
-                        <div>
-                            <div class="text-base font-extrabold text-slate-900 leading-none">15+</div>
-                            <div class="text-xs text-slate-500 mt-0.5">Expert Doctors</div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm shrink-0">
-                            ❤️
-                        </div>
-                        <div>
-                            <div class="text-base font-extrabold text-slate-900 leading-none">10k+</div>
-                            <div class="text-xs text-slate-500 mt-0.5">Happy Patients</div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm shrink-0">
-                            🏥
-                        </div>
-                        <div>
-                            <div class="text-base font-extrabold text-slate-900 leading-none">25+</div>
-                            <div class="text-xs text-slate-500 mt-0.5">Specialties</div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-            <div class="lg:col-span-5 relative flex items-center justify-center">
-                <div class="relative w-full max-w-sm mx-auto">
-                    <div class="absolute right-0 bottom-0 w-4/5 h-4/5 bg-emerald-600 rounded-tl-3xl rounded-br-2xl -z-0"></div>
-                    <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80" 
-                         alt="Clinic Specialist" 
-                         class="relative z-10 w-full h-72 sm:h-80 object-cover object-top rounded-2xl shadow-lg border-4 border-white">
+            <div class="lg:col-span-5 relative flex items-center justify-center lg:justify-end">
+                <div class="relative w-full max-w-md">
+                    <div class="absolute -right-3 -bottom-3 w-4/5 h-4/5 bg-emerald-700 rounded-tl-3xl rounded-br-3xl -z-0"></div>
+                    <div class="relative z-10 w-full h-80 sm:h-96 rounded-2xl shadow-lg border-4 border-white overflow-hidden flex items-center justify-center" style="background-color: #84a572;">
+                        <img src="images/holy_clinic.png" 
+                             alt="Holy Clinic Emblem" 
+                             class="w-72 h-72 sm:w-80 sm:h-80 object-contain">
+                    </div>
 
-                    <div class="absolute -bottom-3 -right-2 sm:-right-4 z-20 bg-white rounded-xl shadow-lg border border-slate-100 px-4 py-3 text-center">
-                        <div class="w-8 h-8 mx-auto mb-1 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
-                            🎧
+                    <div class="absolute -bottom-4 -right-2 sm:-right-4 z-20 bg-white rounded-xl shadow-lg border border-slate-100 px-5 py-3.5 text-center">
+                        <div class="w-9 h-9 mx-auto mb-1 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+                            </svg>
                         </div>
                         <div class="text-base font-extrabold text-slate-900 leading-tight">24/7</div>
                         <div class="text-[11px] text-slate-500 leading-tight">Emergency<br>Support</div>
@@ -156,177 +122,135 @@ require_once 'includes/header.php';
                 </div>
             </div>
         </div>
+    </div>
+</section>
+
+<main class="w-full max-w-7xl mx-auto px-6 sm:px-10 py-14 space-y-16">
+
+    <section id="ourServicesSection" class="scroll-mt-24">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="text-xs font-bold tracking-wider uppercase text-emerald-600">Medical Specialties</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mt-1">Our Services</h2>
+            <div class="w-14 h-1 bg-emerald-600 rounded-full mx-auto mt-3"></div>
+            <p class="text-slate-500 text-sm sm:text-base mt-3">Explore our clinical departments and assigned specialists available for weekday consultations.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+            <?php foreach ($departments as $dept): 
+                $deptName = $dept['name'];
+                $info = $specialtyDetails[$deptName] ?? [
+                    'svg'  => $defaultSvg,
+                    'desc' => 'Specialized medical consultations, diagnostics, and personalized patient care.'
+                ];
+                $assignedDoctors = $doctorsByDept[$deptName] ?? [];
+            ?>
+                <div class="bg-white rounded-2xl border border-slate-200/90 p-7 shadow-sm hover:shadow-md hover:border-emerald-200 transition flex flex-col justify-between">
+                    <div>
+                        <div class="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-5">
+                            <?= $info['svg'] ?>
+                        </div>
+
+                        <h3 class="text-xl font-extrabold text-slate-900 mb-2"><?= htmlspecialchars($deptName) ?></h3>
+                        <p class="text-slate-500 text-sm leading-relaxed mb-5">
+                            <?= htmlspecialchars($info['desc']) ?>
+                        </p>
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-4">
+                        <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2.5">Specialists</div>
+                        <?php if (!empty($assignedDoctors)): ?>
+                            <div class="space-y-2">
+                                <?php foreach ($assignedDoctors as $doc): ?>
+                                    <div class="flex items-center justify-between text-xs sm:text-sm bg-slate-50 px-3.5 py-2 rounded-lg">
+                                        <span class="font-semibold text-slate-800"><?= htmlspecialchars($doc['name']) ?></span>
+                                        <span class="text-emerald-600 font-semibold">₱500</span>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="text-xs text-slate-400 italic">Consultations open weekdays</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </section>
 
-    <div id="live-schedule-section" class="panel" style="padding: 1.15rem 1.35rem; margin-bottom: 4.5rem;">
-        <div class="matrix-topbar">
-            <div class="date-title-group">
-                <span style="font-size: 1.2rem;">📅</span>
-                <h1 id="matrixDateHeading" style="font-size: 1.3rem; color: #0f172a; margin: 0;">Tue, Nov 17</h1>
-                <span id="todayBadge" class="today-pill">Today</span>
+    <section id="howItWorksSection" class="scroll-mt-24 bg-white rounded-3xl border border-slate-200/80 p-8 md:p-12 shadow-sm">
+        <div class="text-center max-w-2xl mx-auto mb-10">
+            <span class="text-xs font-bold tracking-wider uppercase text-emerald-600">Simple Process</span>
+            <h2 class="text-3xl font-extrabold text-slate-900 mt-1">How It Works</h2>
+            <div class="w-14 h-1 bg-emerald-600 rounded-full mx-auto mt-3"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-7">
+            <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="w-10 h-10 rounded-full bg-emerald-600 text-white font-extrabold text-sm flex items-center justify-center mb-4">1</div>
+                <h3 class="text-base font-bold text-slate-900 mb-1.5">Pick a Date & Specialist</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">Open the live schedule matrix to view open 1-hour time slots across all departments.</p>
             </div>
 
-            <div class="slot-legend" style="margin: 0;">
-                <span><i class="box open"></i> Available</span>
-                <span><i class="box booked"></i> Booked</span>
-                <span><i class="box selected"></i> Selected</span>
-                <span><i class="box offduty"></i> Off Duty</span>
+            <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="w-10 h-10 rounded-full bg-emerald-600 text-white font-extrabold text-sm flex items-center justify-center mb-4">2</div>
+                <h3 class="text-base font-bold text-slate-900 mb-1.5">Confirm Your Details</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">Enter your name, Gmail address, and mobile number in a quick two-step confirmation popup.</p>
             </div>
 
-            <div class="matrix-controls">
-                <select id="deptFilterSelect" style="margin:0; width:auto; padding:0.4rem 0.75rem;">
-                    <option value="all">All Departments</option>
-                    <?php foreach ($departments as $dept): ?>
-                        <option value="<?= htmlspecialchars($dept['name']) ?>"><?= htmlspecialchars($dept['name']) ?></option>
-                    <?php endforeach; ?>
-                </select>
+            <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                <div class="w-10 h-10 rounded-full bg-emerald-600 text-white font-extrabold text-sm flex items-center justify-center mb-4">3</div>
+                <h3 class="text-base font-bold text-slate-900 mb-1.5">Receive Your Clinic Pass</h3>
+                <p class="text-sm text-slate-500 leading-relaxed">Get an instant digital pass in your Gmail with a Google Calendar invite and easy cancellation link.</p>
+            </div>
+        </div>
+    </section>
 
-                <div class="nav-btn-group">
-                    <button type="button" id="prevDayBtn" class="icon-nav-btn" title="Previous Weekday">&lsaquo;</button>
-                    <label class="icon-nav-btn calendar-trigger" title="Select Date">
-                        📆
-                        <input type="date" id="matrixDatePicker" min="<?= date('Y-m-d') ?>" value="<?= date('Y-m-d') ?>">
-                    </label>
-                    <button type="button" id="nextDayBtn" class="icon-nav-btn" title="Next Weekday">&rsaquo;</button>
-                </div>
+    <section id="whyChooseUsSection" class="scroll-mt-24 grid grid-cols-1 md:grid-cols-3 gap-7">
+        <div class="bg-emerald-900 text-white rounded-2xl p-7 flex flex-col justify-between">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-300">Consultation Rate</span>
+                <h3 class="text-2xl font-extrabold mt-1">Transparent Flat Fee</h3>
+                <div class="text-4xl font-black text-emerald-300 my-4">₱500 <span class="text-xs font-normal text-emerald-100">/ session</span></div>
+                <p class="text-sm text-emerald-100/90 leading-relaxed">Standard 1-hour specialist consultation with zero hidden booking charges.</p>
             </div>
         </div>
 
-        <div class="matrix-wrapper" style="margin-top: 0.85rem;">
-            <table class="schedule-matrix" id="scheduleMatrix">
-                <thead id="matrixHead"></thead>
-                <tbody id="matrixBody"></tbody>
-            </table>
+        <div class="bg-white rounded-2xl border border-slate-200/90 p-7 shadow-sm">
+            <h3 class="text-xl font-extrabold text-slate-900 mb-4">Why Choose Holy Clinic?</h3>
+            <ul class="space-y-3 text-sm text-slate-600">
+                <li class="flex items-center gap-3">
+                    <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">✓</span>
+                    Experienced Specialists
+                </li>
+                <li class="flex items-center gap-3">
+                    <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">✓</span>
+                    Real-Time Slot Availability
+                </li>
+                <li class="flex items-center gap-3">
+                    <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">✓</span>
+                    Patient-First Care Approach
+                </li>
+                <li class="flex items-center gap-3">
+                    <span class="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">✓</span>
+                    No Account Password Required
+                </li>
+            </ul>
         </div>
-    </div>
 
-    <div class="sticky-bottom-bar" id="ticketBar" style="display: none;">
-        <div class="sticky-bar-inner">
-            <span id="ticketDetails" style="display: none;"></span>
-            <button type="button" id="openModalBtn" class="btn-book" style="border-radius: 999px; padding: 1.1rem 4.5rem; font-size: 1.35rem; font-weight: 800; letter-spacing: 1px; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35);">
-                BOOK NOW
-            </button>
-        </div>
-    </div>
-
-    <div class="modal-backdrop" id="bookingModal" style="display: none;">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div>
-                    <span class="modal-step-tag" id="modalStepTag">STEP 1 OF 2</span>
-                    <h2 id="modalTitle" style="font-size: 1.35rem; color: #0f172a;">Appointment Details</h2>
-                    <p id="modalSubtitle" style="font-size: 0.85rem; color: #64748b;">Review your consultation schedule and enter patient details</p>
-                </div>
-                <button type="button" class="modal-close-btn" id="closeModalBtn">&times;</button>
-            </div>
-
-            <div class="modal-progress-track">
-                <div class="modal-progress-fill" id="modalProgressFill" style="width: 50%;"></div>
-            </div>
-
-            <form method="POST" action="index.php" id="modalBookingForm">
-                <input type="hidden" name="doctor_id" id="modalDoctorId">
-                <input type="hidden" name="appointment_date" id="modalDate">
-                <input type="hidden" name="appointment_time" id="modalTime">
-
-                <div id="modalStep1" class="modal-body">
-                    <div class="summary-box">
-                        <div class="summary-section-title">CONSULTATION SUMMARY</div>
-                        <div class="summary-row">
-                            <span>Specialist</span>
-                            <strong id="sumDoctor">—</strong>
-                        </div>
-                        <div class="summary-row">
-                            <span>Department</span>
-                            <span class="badge" id="sumDept">—</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Date</span>
-                            <strong id="sumDate">—</strong>
-                        </div>
-                        <div class="summary-row">
-                            <span>Time Slot</span>
-                            <div>
-                                <strong id="sumTime">—</strong>
-                                <span class="duration-pill">1 hr</span>
-                            </div>
-                        </div>
-                        <div class="summary-total-row">
-                            <span>Consultation Fee</span>
-                            <strong style="font-size: 1.2rem; color: #0f172a;">₱500</strong>
-                        </div>
-                    </div>
-
-                    <div class="summary-box" style="margin-top: 1rem;">
-                        <div class="summary-section-title">PATIENT INFORMATION</div>
-                        <label>Full Name</label>
-                        <input type="text" name="patient_name" id="inputPatientName" placeholder="e.g., Juan Dela Cruz" required>
-
-                        <label>Email Address</label>
-                        <input type="email" name="patient_email" id="inputPatientEmail" placeholder="e.g., juan@email.com" required>
-
-                        <label>Mobile Number</label>
-                        <input type="tel" name="patient_phone" id="inputPatientPhone" placeholder="e.g., 09171234567" required style="margin-bottom: 0;">
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn-outline" id="cancelModalBtn">Cancel</button>
-                        <button type="button" class="btn-navy" id="toStep2Btn">Next &rsaquo;</button>
-                    </div>
-                </div>
-
-                <div id="modalStep2" class="modal-body" style="display: none;">
-                    <div class="summary-box" style="background: #f8fafc;">
-                        <div class="summary-section-title">CONFIRMATION</div>
-                        <div class="summary-row"><span>Patient</span><strong id="revName">—</strong></div>
-                        <div class="summary-row"><span>Email</span><strong id="revEmail">—</strong></div>
-                        <div class="summary-row"><span>Phone</span><strong id="revPhone">—</strong></div>
-                        <div class="summary-row"><span>Specialist</span><strong id="revDoctor">—</strong></div>
-                        <div class="summary-row"><span>Schedule</span><strong id="revSchedule" style="color: #0f62fe;">—</strong></div>
-                        <div class="summary-total-row"><span>Consultation Fee</span><strong>₱500.00</strong></div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn-outline" id="backToStep1Btn">&lsaquo; Back</button>
-                        <button type="submit" name="confirm_modal_booking" class="btn-navy">Confirm Appointment</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <?php if ($booked_ticket): ?>
-    <div class="modal-backdrop" id="successTicketModal" style="display: flex;">
-        <div class="modal-card" style="border-top: 6px solid #10b981;">
-            <div class="modal-header">
-                <div>
-                    <span class="status-booked">CONFIRMED</span>
-                    <h2 style="font-size: 1.35rem; margin-top: 0.35rem;">Clinic Pass #<?= str_pad($booked_ticket['id'], 4, '0', STR_PAD_LEFT) ?></h2>
-                    <?php if ($email_sent): ?>
-                        <p style="font-size: 0.82rem; color: #059669; font-weight: 600; margin-top: 0.25rem;">
-                            ✉️ Clinic Pass sent to <?= htmlspecialchars($booked_ticket['email']) ?>
-                        </p>
-                    <?php endif; ?>
-                </div>
-                <button type="button" class="modal-close-btn" onclick="document.getElementById('successTicketModal').style.display='none'">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="summary-box" style="background: #f8fafc; border-style: dashed;">
-                    <div class="summary-row"><span>Patient</span><strong><?= htmlspecialchars($booked_ticket['patient']) ?></strong></div>
-                    <div class="summary-row"><span>Specialist</span><strong><?= htmlspecialchars($booked_ticket['doctor']) ?> (<?= htmlspecialchars($booked_ticket['dept']) ?>)</strong></div>
-                    <div class="summary-row"><span>Date & Time</span><strong style="color:#0f62fe;"><?= htmlspecialchars($booked_ticket['date']) ?> @ <?= htmlspecialchars($booked_ticket['time']) ?></strong></div>
-                    <div class="summary-total-row"><span>Consultation Fee</span><strong>₱<?= number_format($booked_ticket['amount'], 2) ?></strong></div>
-                </div>
-                <p style="font-size: 0.85rem; color: #475569; text-align: center; margin: 1rem 0 0 0;">
-                    Please check your Gmail (<strong><?= htmlspecialchars($booked_ticket['email']) ?></strong>) for your official Clinic Pass, Google Calendar link, and cancellation link.
+        <div class="bg-emerald-50/70 rounded-2xl border border-emerald-200/80 p-7 flex flex-col justify-between">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Clinic Hours</span>
+                <h3 class="text-xl font-extrabold text-slate-900 mt-1 mb-3">We're Here For You</h3>
+                <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                    Morning Shift: <strong>8:00 AM – 12:00 PM</strong><br>
+                    Afternoon Shift: <strong>1:00 PM – 5:00 PM</strong><br>
+                    <span class="text-xs text-slate-500">Closed on Saturdays & Sundays</span>
                 </p>
-                <div class="modal-footer" style="grid-template-columns: 1fr;">
-                    <button type="button" class="btn-navy" style="width: 100%;" onclick="document.getElementById('successTicketModal').style.display='none'">Done</button>
-                </div>
+            </div>
+            <div class="text-xs font-semibold text-emerald-800">
+                Need to cancel? Use the link in your confirmation email at least 2 hours prior.
             </div>
         </div>
-    </div>
-    <?php endif; ?>
+    </section>
 
 </main>
 

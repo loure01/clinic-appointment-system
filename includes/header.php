@@ -2,7 +2,7 @@
 $current_dir  = basename(dirname($_SERVER['PHP_SELF']));
 $in_subfolder = in_array($current_dir, ['patient', 'admin']);
 $in_admin     = ($current_dir === 'admin');
-$base_path    = $in_subfolder ? '../' : '';
+$base_path    = $in_subfolder ? '' : '';
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>

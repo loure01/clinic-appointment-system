@@ -4,9 +4,11 @@ require_once 'includes/departments.php';
 require_once 'includes/doctors.php';
 require_once 'includes/patients.php';
 require_once 'includes/appointments.php';
+require_once 'includes/mailer.php';
 
 $booking_error = '';
 $booked_ticket = null;
+$email_sent    = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_modal_booking'])) {
     $name      = trim($_POST['patient_name'] ?? '');
@@ -48,6 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_modal_booking
                         'time'    => $time,
                         'amount'  => $amount
                     ];
+
+                    $email_sent = sendClinicPassEmail($booked_ticket);
                 } else {
                     $booking_error = "Unable to complete booking. Please try again.";
                 }
@@ -117,12 +121,13 @@ require_once 'includes/header.php';
             </table>
         </div>
     </div>
-<div class="sticky-bottom-bar" id="ticketBar" style="display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; border-top: 1px solid #cbd5e1; box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.12); padding: 1rem; z-index: 950;">
-        <div class="sticky-bar-inner" style="width: 100%; display: flex; justify-content: center; align-items: center;">
+
+    <div class="sticky-bottom-bar" id="ticketBar" style="display: none;">
+        <div class="sticky-bar-inner">
             <span id="ticketDetails" style="display: none;"></span>
-           <button type="button" id="openModalBtn" class="btn-book" style="border-radius: 999px; padding: 1.1rem 4.5rem; font-size: 1.35rem; font-weight: 800; letter-spacing: 1px; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35);">
-    BOOK NOW
-</button>
+            <button type="button" id="openModalBtn" class="btn-book" style="border-radius: 999px; padding: 1.1rem 4.5rem; font-size: 1.35rem; font-weight: 800; letter-spacing: 1px; box-shadow: 0 6px 18px rgba(5, 150, 105, 0.35);">
+                BOOK NOW
+            </button>
         </div>
     </div>
 
@@ -219,6 +224,11 @@ require_once 'includes/header.php';
                 <div>
                     <span class="status-booked">CONFIRMED</span>
                     <h2 style="font-size: 1.35rem; margin-top: 0.35rem;">Clinic Pass #<?= str_pad($booked_ticket['id'], 4, '0', STR_PAD_LEFT) ?></h2>
+                    <?php if ($email_sent): ?>
+                        <p style="font-size: 0.82rem; color: #059669; font-weight: 600; margin-top: 0.25rem;">
+                            ✉️ A copy of this Clinic Pass & magic link was sent to <?= htmlspecialchars($booked_ticket['email']) ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
                 <button type="button" class="modal-close-btn" onclick="document.getElementById('successTicketModal').style.display='none'">&times;</button>
             </div>

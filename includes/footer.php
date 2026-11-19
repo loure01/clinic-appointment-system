@@ -6,5 +6,7 @@
     <script src="<?= $base_path ?>js/booking.js?v=3"></script>
 <?php endif; ?>
 
+</div> <!-- closes .main-wrapper -->
+</div> <!-- closes .app-shell -->
 </body>
 </html>

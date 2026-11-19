@@ -6,10 +6,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($page_title) ? htmlspecialchars($page_title) : 'Clinic Appointment System' ?></title>
-    <link rel="stylesheet" href="<?= $base_path ?>css/style.css?v=6">
+    <link rel="stylesheet" href="<?= $base_path ?>css/style.css?v=7">
     <style>
         :root {
             --nav-bg: #064e3b;
@@ -41,30 +42,38 @@ $current_page = basename($_SERVER['PHP_SELF']);
             line-height: 1.5;
         }
 
-        /* --- GREEN & WHITE STICKY NAVBAR --- */
-        .navbar {
-            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
-            color: #ffffff;
-            padding: 0.9rem 2rem;
+        /* --- LEFT SIDEBAR & APP SHELL --- */
+        .app-shell {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            box-shadow: 0 4px 12px rgba(6, 78, 59, 0.18);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            min-height: 100vh;
         }
 
-        .brand {
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #064e3b 0%, #022c22 100%);
+            color: #ffffff;
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 1000;
+            box-shadow: 4px 0 16px rgba(6, 78, 59, 0.15);
+        }
+
+        .sidebar-brand {
             display: flex;
             align-items: center;
-            gap: 0.65rem;
-            text-decoration: none;
+            gap: 0.75rem;
             color: #ffffff;
+            text-decoration: none;
             font-size: 1.25rem;
-            font-weight: 700;
+            font-weight: 800;
+            padding: 0 0.5rem 1.5rem 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            margin-bottom: 1.25rem;
         }
 
         .brand-icon {
@@ -81,54 +90,59 @@ $current_page = basename($_SERVER['PHP_SELF']);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
 
-        .brand span {
+        .sidebar-brand span {
             color: var(--nav-accent);
         }
 
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+        .sidebar-section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #6ee7b7;
+            padding: 0.75rem 0.75rem 0.35rem;
         }
 
-        .nav-links a {
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-nav a {
             color: #d1fae5;
             text-decoration: none;
-            padding: 0.5rem 0.95rem;
-            border-radius: 8px;
+            padding: 0.7rem 0.9rem;
+            border-radius: 10px;
             font-weight: 500;
             font-size: 0.92rem;
             transition: all 0.2s ease;
         }
 
-        .nav-links a:hover {
-            background: rgba(255, 255, 255, 0.12);
+        .sidebar-nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
             color: #ffffff;
         }
 
-        .nav-links a.active {
+        .sidebar-nav a.active {
             background: #ffffff;
             color: #064e3b;
             font-weight: 700;
-        }
-        .nav-links a.admin-pill {
-            color: rgba(209, 250, 229, 0.45);
-            font-size: 0.78rem;
-            font-weight: 500;
-            padding: 0.35rem 0.65rem;
-            margin-left: 0.5rem;
-            border: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .nav-links a.admin-pill:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.08);
+        .main-wrapper {
+            margin-left: 260px;
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         /* --- MAIN CONTAINER & HERO --- */
         .container {
             max-width: 1200px;
+            width: 100%;
             margin: 1.5rem auto;
             padding: 0 1.5rem;
         }
@@ -163,6 +177,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
         @media (max-width: 860px) {
             .dashboard-layout {
                 grid-template-columns: 1fr;
+            }
+            .sidebar {
+                position: static;
+                width: 100%;
+            }
+            .app-shell {
+                flex-direction: column;
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .sticky-bottom-bar {
+                left: 0 !important;
+                width: 100% !important;
             }
         }
 
@@ -436,8 +464,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
         .sticky-bottom-bar {
             position: fixed;
             bottom: 0;
-            left: 0;
-            width: 100%;
+            left: 260px !important;
+            width: calc(100% - 260px) !important;
             background: #ffffff;
             border-top: 1px solid #d1fae5;
             box-shadow: 0 -4px 20px rgba(6, 78, 59, 0.12);
@@ -464,7 +492,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
             padding: 1rem;
             z-index: 2000;
         }
-    .modal-card {
+
+        .modal-card {
             background: #ffffff;
             width: 100%;
             max-width: 520px;

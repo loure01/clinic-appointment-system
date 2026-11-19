@@ -42,7 +42,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             line-height: 1.5;
         }
 
-        /* --- LEFT SIDEBAR & APP SHELL --- */
         .app-shell {
             display: flex;
             min-height: 100vh;
@@ -139,7 +138,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             flex-direction: column;
         }
 
-        /* --- MAIN CONTAINER & HERO --- */
         .container {
             max-width: 1200px;
             width: 100%;
@@ -166,7 +164,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             color: var(--text-muted);
         }
 
-        /* --- TWO-COLUMN DASHBOARD LAYOUT --- */
         .dashboard-layout {
             display: grid;
             grid-template-columns: 1fr 1.3fr;
@@ -216,7 +213,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             color: #064e3b;
         }
 
-        /* --- INPUTS & FORMS --- */
         input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="password"], select, textarea {
             width: 100%;
             padding: 0.6rem 0.8rem;
@@ -255,7 +251,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             font-weight: 700;
         }
 
-        /* --- SCHEDULE MATRIX --- */
         .matrix-topbar {
             display: flex;
             justify-content: space-between;
@@ -437,7 +432,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
         }
 
-        /* --- SLOT LEGEND --- */
         .slot-legend {
             display: flex;
             gap: 1.25rem;
@@ -460,7 +454,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         .box.selected { background: var(--primary); }
         .box.offduty { background: #f1f5f9; border: 1px solid #e2e8f0; }
 
-        /* --- STICKY BOTTOM BAR --- */
         .sticky-bottom-bar {
             position: fixed;
             bottom: 0;
@@ -480,7 +473,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             align-items: center;
         }
 
-        /* --- IN-PAGE BOOKING MODAL POPUP --- */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -626,7 +618,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             background: var(--primary-hover);
         }
 
-        /* --- GENERAL BUTTONS --- */
         .btn, .btn-book, button[type="submit"] {
             display: inline-block;
             background: var(--primary);
@@ -659,7 +650,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             background: #dc2626;
         }
 
-        /* --- STANDARD TABLES & STATUS BADGES (My Appointments & Admin) --- */
         table:not(.schedule-matrix) {
             width: 100%;
             border-collapse: collapse;
@@ -694,7 +684,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         .status-completed { background: #d1fae5; color: #065f46; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
         .status-cancelled { background: #fee2e2; color: #991b1b; padding: 0.25rem 0.65rem; border-radius: 20px; font-weight: 600; font-size: 0.8rem; }
 
-        /* --- ALERTS --- */
         .alert, .success, .error {
             padding: 1rem 1.25rem;
             border-radius: 10px;
@@ -708,7 +697,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <body>
 
 <div class="app-shell">
-    <!-- LEFT SIDEBAR -->
     <aside class="sidebar">
         <a href="<?= $base_path ?>index.php" class="sidebar-brand">
             <span class="brand-icon">+</span>
@@ -719,9 +707,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <nav class="sidebar-nav">
             <a href="<?= $base_path ?>index.php" class="<?= $current_page === 'index.php' ? 'active' : '' ?>">
                 📅 Live Schedule
-            </a>
-            <a href="<?= $base_path ?>patient/my_appointments.php" class="<?= $current_page === 'my_appointments.php' ? 'active' : '' ?>">
-                📋 My Appointments
             </a>
         </nav>
 
@@ -736,5 +721,4 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </nav>
     </aside>
 
-    <!-- MAIN CONTENT WRAPPER (Closed in footer.php) -->
     <div class="main-wrapper">

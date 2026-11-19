@@ -226,7 +226,7 @@ require_once 'includes/header.php';
                     <h2 style="font-size: 1.35rem; margin-top: 0.35rem;">Clinic Pass #<?= str_pad($booked_ticket['id'], 4, '0', STR_PAD_LEFT) ?></h2>
                     <?php if ($email_sent): ?>
                         <p style="font-size: 0.82rem; color: #059669; font-weight: 600; margin-top: 0.25rem;">
-                            ✉️ A copy of this Clinic Pass & magic link was sent to <?= htmlspecialchars($booked_ticket['email']) ?>
+                            ✉️ Clinic Pass sent to <?= htmlspecialchars($booked_ticket['email']) ?>
                         </p>
                     <?php endif; ?>
                 </div>
@@ -239,9 +239,11 @@ require_once 'includes/header.php';
                     <div class="summary-row"><span>Date & Time</span><strong style="color:#0f62fe;"><?= htmlspecialchars($booked_ticket['date']) ?> @ <?= htmlspecialchars($booked_ticket['time']) ?></strong></div>
                     <div class="summary-total-row"><span>Consultation Fee</span><strong>₱<?= number_format($booked_ticket['amount'], 2) ?></strong></div>
                 </div>
+                <p style="font-size: 0.85rem; color: #475569; text-align: center; margin: 1rem 0 0 0;">
+                    Please check your Gmail (<strong><?= htmlspecialchars($booked_ticket['email']) ?></strong>) for your official Clinic Pass, Google Calendar link, and cancellation link.
+                </p>
                 <div class="modal-footer">
-                    <a href="patient/my_appointments.php?email=<?= urlencode($booked_ticket['email']) ?>" class="btn-outline" style="text-align:center; text-decoration:none;">My Appointments</a>
-                    <button type="button" class="btn-navy" onclick="document.getElementById('successTicketModal').style.display='none'">Done</button>
+                    <button type="button" class="btn-navy" style="width: 100%;" onclick="document.getElementById('successTicketModal').style.display='none'">Done</button>
                 </div>
             </div>
         </div>

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../config/db.php';
+require_once 'config/db.php';
 
 if (isset($_SESSION['admin_id'])) {
     header("Location: dashboard.php");
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $page_title = "Staff Login - Clinic Appointment System";
-require_once '../includes/header.php';
+require_once 'includes/header.php';
 ?>
 
 <main class="container" style="display: flex; justify-content: center; align-items: center; min-height: 75vh;">
@@ -59,4 +59,4 @@ require_once '../includes/header.php';
     </div>
 </main>
 
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once 'includes/footer.php'; ?>

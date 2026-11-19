@@ -1,8 +1,8 @@
 <?php
 $current_dir  = basename(dirname($_SERVER['PHP_SELF']));
-$in_subfolder = in_array($current_dir, ['patient', 'admin']);
-$in_admin     = ($current_dir === 'admin');
-$base_path    = $in_subfolder ? '../' : '';
+$in_subfolder = false;
+$in_admin     = true;
+$base_path    = '';
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>

@@ -678,21 +678,34 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </head>
 <body>
 
-<header class="navbar">
-    <a href="<?= $base_path ?>index.php" class="brand">
-        <span class="brand-icon">+</span>
-        <div>Clinic <span>Appointment System</span></div>
-    </a>
+<div class="app-shell">
+    <!-- LEFT SIDEBAR -->
+    <aside class="sidebar">
+        <a href="<?= $base_path ?>index.php" class="sidebar-brand">
+            <span class="brand-icon">+</span>
+            <div>Clinic<span>System</span></div>
+        </a>
 
-    <nav class="nav-links">
-        <a href="<?= $base_path ?>index.php" class="<?= $current_page === 'index.php' ? 'active' : '' ?>">
-            Dashboard
-        </a>
-        <a href="<?= $base_path ?>patient/my_appointments.php" class="<?= $current_page === 'my_appointments.php' ? 'active' : '' ?>">
-            My Appointments
-        </a>
-        <a href="<?= $base_path ?>admin/login.php" class="admin-pill <?= $current_page === 'login.php' ? 'active' : '' ?>">
-            Admin Portal
-        </a>
-    </nav>
-</header>
+        <div class="sidebar-section-label">PATIENT PORTAL</div>
+        <nav class="sidebar-nav">
+            <a href="<?= $base_path ?>index.php" class="<?= $current_page === 'index.php' ? 'active' : '' ?>">
+                📅 Live Schedule
+            </a>
+            <a href="<?= $base_path ?>patient/my_appointments.php" class="<?= $current_page === 'my_appointments.php' ? 'active' : '' ?>">
+                📋 My Appointments
+            </a>
+        </nav>
+
+        <div class="sidebar-section-label">STAFF & ADMIN</div>
+        <nav class="sidebar-nav">
+            <a href="<?= $base_path ?>admin/dashboard.php" class="<?= $current_page === 'dashboard.php' ? 'active' : '' ?>">
+                🩺 Operations Dashboard
+            </a>
+            <a href="<?= $base_path ?>admin/login.php" class="<?= $current_page === 'login.php' ? 'active' : '' ?>">
+                🔐 Staff Login
+            </a>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER (Closed in footer.php) -->
+    <div class="main-wrapper">

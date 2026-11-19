@@ -528,3 +528,95 @@ tr:hover td {
 }
 .alert.success, .success { background: #dcfce7; color: #166534; border: 1px solid #22c55e; }
 .alert.error, .error { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, #064e3b 0%, #022c22 100%);
+    color: #ffffff;
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-weight: 800;
+    padding: 0 0.5rem 1.5rem 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.25rem;
+}
+
+.sidebar-brand span { color: #6ee7b7; }
+
+.sidebar-section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #6ee7b7;
+    padding: 0.75rem 0.75rem 0.35rem;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+}
+
+.sidebar-nav a {
+    color: #d1fae5;
+    text-decoration: none;
+    padding: 0.7rem 0.9rem;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 0.92rem;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.sidebar-nav a.active {
+    background: #ffffff;
+    color: #064e3b;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.main-wrapper {
+    margin-left: 260px;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Offset the sticky BOOK NOW bar so it centers in the main area */
+.sticky-bottom-bar {
+    left: 260px !important;
+    width: calc(100% - 260px) !important;
+}
+
+@media (max-width: 860px) {
+    .sidebar { position: static; width: 100%; }
+    .app-shell { flex-direction: column; }
+    .main-wrapper { margin-left: 0; }
+    .sticky-bottom-bar { left: 0 !important; width: 100% !important; }
+}

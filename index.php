@@ -80,7 +80,85 @@ require_once 'includes/header.php';
         <div class="alert error"><?= htmlspecialchars($booking_error) ?></div>
     <?php endif; ?>
 
-    <div class="panel" style="padding: 1.15rem 1.35rem; margin-bottom: 4.5rem;">
+    <section class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-50 via-emerald-50/40 to-teal-50/70 border border-slate-200/80 shadow-sm mb-6 p-6 md:p-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7 space-y-5">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100/80 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+                    Trusted Care. Better Health.
+                </div>
+
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+                    Your Health<br>
+                    <span class="text-emerald-600">Our Priority</span>
+                </h1>
+
+                <p class="text-slate-600 text-sm sm:text-base max-w-lg leading-relaxed">
+                    Compassionate care, advanced technology, and experienced specialists — all for a healthier you.
+                </p>
+
+                <div class="flex flex-wrap items-center gap-3 pt-1">
+                    <a href="#live-schedule-section" class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/20 transition">
+                        Book Appointment
+                    </a>
+                    <a href="#live-schedule-section" onclick="document.getElementById('deptFilterSelect').focus();" class="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm border border-slate-300 transition">
+                        Our Services
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 pt-4 border-t border-slate-200/70 max-w-md">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm shrink-0">
+                            🩺
+                        </div>
+                        <div>
+                            <div class="text-base font-extrabold text-slate-900 leading-none">15+</div>
+                            <div class="text-xs text-slate-500 mt-0.5">Expert Doctors</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm shrink-0">
+                            ❤️
+                        </div>
+                        <div>
+                            <div class="text-base font-extrabold text-slate-900 leading-none">10k+</div>
+                            <div class="text-xs text-slate-500 mt-0.5">Happy Patients</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm shrink-0">
+                            🏥
+                        </div>
+                        <div>
+                            <div class="text-base font-extrabold text-slate-900 leading-none">25+</div>
+                            <div class="text-xs text-slate-500 mt-0.5">Specialties</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 relative flex items-center justify-center">
+                <div class="relative w-full max-w-sm mx-auto">
+                    <div class="absolute right-0 bottom-0 w-4/5 h-4/5 bg-emerald-600 rounded-tl-3xl rounded-br-2xl -z-0"></div>
+                    <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80" 
+                         alt="Clinic Specialist" 
+                         class="relative z-10 w-full h-72 sm:h-80 object-cover object-top rounded-2xl shadow-lg border-4 border-white">
+
+                    <div class="absolute -bottom-3 -right-2 sm:-right-4 z-20 bg-white rounded-xl shadow-lg border border-slate-100 px-4 py-3 text-center">
+                        <div class="w-8 h-8 mx-auto mb-1 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
+                            🎧
+                        </div>
+                        <div class="text-base font-extrabold text-slate-900 leading-tight">24/7</div>
+                        <div class="text-[11px] text-slate-500 leading-tight">Emergency<br>Support</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="live-schedule-section" class="panel" style="padding: 1.15rem 1.35rem; margin-bottom: 4.5rem;">
         <div class="matrix-topbar">
             <div class="date-title-group">
                 <span style="font-size: 1.2rem;">📅</span>
@@ -242,7 +320,7 @@ require_once 'includes/header.php';
                 <p style="font-size: 0.85rem; color: #475569; text-align: center; margin: 1rem 0 0 0;">
                     Please check your Gmail (<strong><?= htmlspecialchars($booked_ticket['email']) ?></strong>) for your official Clinic Pass, Google Calendar link, and cancellation link.
                 </p>
-                <div class="modal-footer">
+                <div class="modal-footer" style="grid-template-columns: 1fr;">
                     <button type="button" class="btn-navy" style="width: 100%;" onclick="document.getElementById('successTicketModal').style.display='none'">Done</button>
                 </div>
             </div>

@@ -75,11 +75,19 @@ function sendClinicPassEmail($ticket) {
     </div>";
 
     try {
+        $mail->SMTPOptions = [
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            ]
+        ];
+
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
         $mail->Username   = 'christemae.castillon@hcdc.edu.ph';
-        $mail->Password   = '12242004cm!!';
+        $mail->Password   = 'xybfxckixrkezxtc';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 

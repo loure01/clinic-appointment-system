@@ -120,7 +120,8 @@ require_once '../includes/header.php';
                                 </td>
                                 <td style="text-align: right;">
                                     <?php if ($canCancel): ?>
-                                        <form method="POST" action="my_appointments.php" onsubmit="return confirm('Are you sure you want to cancel Pass #<?= $passNo ?>?');" style="display: inline;">
+                                        <!-- Form submits back to this same page to trigger the PHP at the top -->
+                                        <form method="POST" onsubmit="return confirm('Are you sure you want to cancel Pass #<?= $passNo ?>?');" style="display: inline;">
                                             <input type="hidden" name="email" value="<?= htmlspecialchars($email) ?>">
                                             <input type="hidden" name="cancel_appointment_id" value="<?= (int)$appt['appointment_id'] ?>">
                                             <button type="submit" class="btn-cancel" style="border: none; cursor: pointer;">Cancel Visit</button>

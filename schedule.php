@@ -24,37 +24,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_modal_booking
         $booking_error = "Clinic is closed on Saturdays and Sundays.";
     } elseif ($name === '' || $email === '' || $phone === '' || $time === '') {
         $booking_error = "Please complete all patient information fields.";
+    } elseif (!isset($_FILES['payment_proof']) || $_FILES['payment_proof']['error'] !== UPLOAD_ERR_OK) {
+        $booking_error = "Please upload a valid proof of payment.";
     } else {
-        $current_booked = getBookedSlots($conn, $doctor_id, $date);
-        if (in_array($time, $current_booked)) {
-            $booking_error = "Sorry, that time slot was just booked by someone else.";
+        // Handle File Upload
+        $uploadDir = 'uploads/proofs/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $fileInfo = pathinfo($_FILES['payment_proof']['name']);
+        $fileExt  = strtolower($fileInfo['extension']);
+        $allowed  = ['jpg', 'jpeg', 'png', 'pdf'];
+
+        if (!in_array($fileExt, $allowed)) {
+            $booking_error = "Invalid file type. Only JPG, PNG, and PDF are allowed.";
+        } elseif ($_FILES['payment_proof']['size'] > 5000000) { // 5MB limit
+            $booking_error = "File is too large. Maximum size is 5MB.";
         } else {
-            $patient = getPatientByEmail($conn, $email);
-            $patient_id = $patient ? $patient['patient_id'] : createPatient($conn, $name, $email, $phone);
+            $newFileName = uniqid('proof_') . '.' . $fileExt;
+            $uploadPath  = $uploadDir . $newFileName;
 
-            if ($patient_id) {
-                $appt_id = createAppointment($conn, $patient_id, $doctor_id, $date, $time);
-                if ($appt_id) {
-                    $pay_stmt = $conn->prepare("INSERT INTO payments (appointment_id, amount, payment_status) VALUES (?, ?, 'Paid')");
-                    $pay_stmt->bind_param("id", $appt_id, $amount);
-                    $pay_stmt->execute();
-
-                    $doc_info = getDoctorById($conn, $doctor_id);
-                    $booked_ticket = [
-                        'id'      => $appt_id,
-                        'patient' => $name,
-                        'email'   => $email,
-                        'doctor'  => $doc_info['name'],
-                        'dept'    => $doc_info['dept_name'],
-                        'date'    => $date,
-                        'time'    => $time,
-                        'amount'  => $amount
-                    ];
-
-                    $email_sent = sendClinicPassEmail($booked_ticket);
+            if (move_uploaded_file($_FILES['payment_proof']['tmp_name'], $uploadPath)) {
+                $current_booked = getBookedSlots($conn, $doctor_id, $date);
+                
+                if (in_array($time, $current_booked)) {
+                    $booking_error = "Sorry, that time slot was just booked by someone else.";
+                    unlink($uploadPath); // Delete file if slot is taken
                 } else {
-                    $booking_error = "Unable to complete booking. Please try again.";
+                    $patient = getPatientByEmail($conn, $email);
+                    $patient_id = $patient ? $patient['patient_id'] : createPatient($conn, $name, $email, $phone);
+
+                    if ($patient_id) {
+                        $appt_id = createAppointment($conn, $patient_id, $doctor_id, $date, $time);
+                        if ($appt_id) {
+                            // Insert into payments with the proof filename
+                            $pay_stmt = $conn->prepare("INSERT INTO payments (appointment_id, amount, payment_status, proof_of_payment) VALUES (?, ?, 'Pending Verification', ?)");
+                            $pay_stmt->bind_param("ids", $appt_id, $amount, $newFileName);
+                            $pay_stmt->execute();
+
+                            $doc_info = getDoctorById($conn, $doctor_id);
+                            $booked_ticket = [
+                                'id'      => $appt_id,
+                                'patient' => $name,
+                                'email'   => $email,
+                                'doctor'  => $doc_info['name'],
+                                'dept'    => $doc_info['dept_name'],
+                                'date'    => $date,
+                                'time'    => $time,
+                                'amount'  => $amount
+                            ];
+
+                            $email_sent = sendClinicPassEmail($booked_ticket);
+                        } else {
+                            $booking_error = "Unable to complete booking. Please try again.";
+                            unlink($uploadPath);
+                        }
+                    }
                 }
+            } else {
+                $booking_error = "Failed to save the uploaded file. Please try again.";
             }
         }
     }
@@ -154,7 +183,8 @@ require_once 'includes/header.php';
                 <div class="modal-progress-fill" id="modalProgressFill" style="width: 50%;"></div>
             </div>
 
-            <form method="POST" action="schedule.php" id="modalBookingForm">
+            <!-- enctype added back for file upload -->
+            <form method="POST" action="schedule.php" id="modalBookingForm" enctype="multipart/form-data">
                 <input type="hidden" name="doctor_id" id="modalDoctorId">
                 <input type="hidden" name="appointment_date" id="modalDate">
                 <input type="hidden" name="appointment_time" id="modalTime">
@@ -216,9 +246,42 @@ require_once 'includes/header.php';
                         <div class="summary-total-row"><span>Consultation Fee</span><strong>₱500.00</strong></div>
                     </div>
 
+                    <!-- SCAN TO PAY & UPLOAD PROOF SECTION -->
+                    <div class="summary-box" style="margin-top: 1rem; border: 2px solid #059669; background: #ffffff;">
+                        <div class="summary-section-title" style="color: #059669; text-align: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">SCAN TO PAY</div>
+                        
+                            <div style="text-align: center; margin: 1rem 0;">
+                            <p style="font-size: 0.85rem; color: #475569; margin-bottom: 0.75rem;">
+                                Scan this QR code using GCash, Maya, or your banking app.
+                            </p>
+                            
+                           
+                            <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 20px; margin-bottom: 1rem; flex-wrap: wrap;">
+                                
+                                
+                                <img src="images/qr1.jpg" alt="GCash QR Code" style="width: 180px; height: auto; border-radius: 8px; border: 1px solid #cbd5e1; padding: 5px; background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                                
+                             
+                                <img src="images/qr2.jpg" alt="Maya QR Code" style="width: 180px; height: auto; border-radius: 8px; border: 1px solid #cbd5e1; padding: 5px; background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                                
+                            </div>
+
+                            <p style="font-size: 0.95rem; font-weight: bold; color: #0f172a;">Total Amount: ₱500.00</p>
+                        </div>
+
+                        <div style="border-top: 1px dashed #cbd5e1; margin: 1rem 0;"></div>
+
+                        <p style="font-size: 0.85rem; color: #475569; margin-bottom: 0.5rem;">
+                            After paying, please upload your receipt/screenshot below.
+                        </p>
+                        <label style="font-weight: 600; color: #059669;">Upload Proof of Payment</label>
+                        <input type="file" name="payment_proof" accept=".jpg, .jpeg, .png, .pdf" required style="padding: 0.45rem; border: 1px dashed #059669; border-radius: 6px; width: 100%; margin-bottom: 0; background: #f0fdf4;">
+                    </div>
+                    <!-- END OF PAYMENT SECTION -->
+
                     <div class="modal-footer">
                         <button type="button" class="btn-outline" id="backToStep1Btn">&lsaquo; Back</button>
-                        <button type="submit" name="confirm_modal_booking" class="btn-navy">Confirm Appointment</button>
+                        <button type="submit" name="confirm_modal_booking" class="btn-navy" style="background-color: #059669;">Confirm Appointment</button>
                     </div>
                 </div>
             </form>
@@ -251,7 +314,7 @@ require_once 'includes/header.php';
                     <div class="summary-total-row"><span>Consultation Fee</span><strong>₱<?= number_format($booked_ticket['amount'], 2) ?></strong></div>
                 </div>
                 <p style="font-size: 0.85rem; color: #475569; text-align: center; margin: 1rem 0 0 0;">
-                    Please check your Gmail (<strong><?= htmlspecialchars($booked_ticket['email']) ?></strong>) for your official Clinic Pass, Google Calendar link, and cancellation link.
+                    Your payment is pending verification. Please check your Gmail (<strong><?= htmlspecialchars($booked_ticket['email']) ?></strong>) for your official Clinic Pass.
                 </p>
                 <div class="modal-footer" style="grid-template-columns: 1fr;">
                     <button type="button" class="btn-navy" style="width: 100%;" onclick="document.getElementById('successTicketModal').style.display='none'">Done</button>

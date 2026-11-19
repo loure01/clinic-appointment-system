@@ -74,14 +74,12 @@ require_once 'includes/header.php';
 </header>
 
 <section class="relative w-full overflow-hidden bg-gradient-to-r from-slate-50 via-emerald-50/50 to-teal-100/60 border-b border-slate-200/80">
-    <!-- Landscape Medical Banner Image -->
-    <img src="images/clinic_landscape.jpg"
-         alt=""
-         class="absolute inset-0 w-full h-full object-cover object-right pointer-events-none"
-         style="opacity: 0.85;">
+    <!-- Landscape Transparent Background Image Behind Text -->
+    <div class="absolute inset-0 bg-cover bg-right bg-no-repeat opacity-15 pointer-events-none"
+         style="background-image: url('images/holy_clinic.png');"></div>
 
-    <!-- Soft Left-Only Fade so Dark Text Stays Sharp -->
-    <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent pointer-events-none"></div>
+    <!-- Soft Left-to-Right Fade so Text Stays Sharp -->
+    <div class="absolute inset-0 bg-gradient-to-r from-white/95 via-white/80 to-white/30 pointer-events-none"></div>
 
     <div class="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 py-14 md:py-20">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">

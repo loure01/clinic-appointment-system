@@ -696,42 +696,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <body>
 
 <?php if ($in_admin): ?>
-<div class="app-shell">
-    <aside class="sidebar">
-        <a href="<?= $in_admin ? 'dashboard.php' : $base_path . 'index.php' ?>" class="sidebar-brand">
-            <span class="brand-icon">+</span>
-            <div>Clinic<span><?= $in_admin ? 'Admin' : 'System' ?></span></div>
-        </a>
 
-        <?php if ($in_admin): ?>
-            <div class="sidebar-section-label">OPERATIONS</div>
-            <nav class="sidebar-nav">
-                <a href="dashboard.php" class="<?= $current_page === 'dashboard.php' ? 'active' : '' ?>" style="display: flex; align-items: center; gap: 0.65rem;">
-                    <svg style="width: 18px; height: 18px; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5"/>
-                    </svg>
-                    <span>Operations Dashboard</span>
-                </a>
-                <a href="logout.php" style="display: flex; align-items: center; gap: 0.65rem; color: #fca5a5;">
-                    <svg style="width: 18px; height: 18px; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
-                    </svg>
-                    <span>Logout</span>
-                </a>
-            </nav>
-        <?php else: ?>
-            <div class="sidebar-section-label">PATIENT PORTAL</div>
-            <nav class="sidebar-nav">
-                <a href="<?= $base_path ?>index.php" class="<?= in_array($current_page, ['index.php', 'schedule.php']) ? 'active' : '' ?>" style="display: flex; align-items: center; gap: 0.65rem;">
-                    <svg style="width: 18px; height: 18px; flex-shrink: 0;" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
-                    </svg>
-                    <span>Home</span>
-                </a>
-            </nav>
-        <?php endif; ?>
-    </aside>
-    <div class="main-wrapper">
 <?php else: ?>
 <div class="min-h-screen flex flex-col">
     <div class="w-full flex-1">

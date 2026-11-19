@@ -4,7 +4,7 @@ require_once 'config/db.php';
 
 if (isset($_SESSION['admin_id'])) {
     header("Location: dashboard.php");
-    exit;
+    exit();
 }
 
 $error = '';
@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    $stmt = $conn->prepare("SELECT admin_id, username, password FROM admins WHERE username = ?");
+    $stmt = $conn->prepare("SELECT admin_id, username, password FROM admin WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -45,7 +45,7 @@ require_once 'includes/header.php';
             <div class="alert error" style="font-size: 0.88rem; padding: 0.75rem 1rem;"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
 
-        <form method="POST" action="login.php">
+        <form method="POST" action="">
             <label>Username</label>
             <input type="text" name="username" placeholder="Enter staff username" required autofocus>
 

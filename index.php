@@ -73,10 +73,19 @@ require_once 'includes/header.php';
     </div>
 </header>
 
-<section class="w-full bg-gradient-to-r from-slate-50 via-emerald-50/50 to-teal-100/60 border-b border-slate-200/80">
-    <div class="w-full max-w-7xl mx-auto px-6 sm:px-10 py-14 md:py-20">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-            <div class="lg:col-span-7 space-y-6">
+<section class="relative w-full overflow-hidden bg-gradient-to-r from-slate-50 via-emerald-50/50 to-teal-100/60 border-b border-slate-200/80">
+    <!-- Landscape Medical Banner Image -->
+    <img src="images/clinic_landscape.jpg"
+         alt=""
+         class="absolute inset-0 w-full h-full object-cover object-right pointer-events-none"
+         style="opacity: 0.85;">
+
+    <!-- Soft Left-Only Fade so Dark Text Stays Sharp -->
+    <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent pointer-events-none"></div>
+
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 py-14 md:py-20">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
+            <div class="max-w-xl space-y-6">
                 <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-emerald-200 text-emerald-800 text-xs font-semibold shadow-xs">
                     <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
                     Trusted Care. Better Health.
@@ -87,8 +96,8 @@ require_once 'includes/header.php';
                     <span class="text-emerald-600">Our Priority</span>
                 </h1>
 
-                <p class="text-slate-600 text-base sm:text-lg max-w-xl leading-relaxed">
-                    Compassionate care, advanced technology, and experienced specialists — all for a healthier you. View real-time doctor availability and receive your Clinic Pass straight to your Gmail.
+                <p class="text-slate-600 text-base sm:text-lg leading-relaxed">
+                    Good care starts with people who genuinely care. Stop by for a visit or book a time with one of our doctors, we’re always happy to help.
                 </p>
 
                 <div class="flex flex-wrap items-center gap-4 pt-2">
@@ -101,25 +110,15 @@ require_once 'includes/header.php';
                 </div>
             </div>
 
-            <div class="lg:col-span-5 relative flex items-center justify-center lg:justify-end">
-                <div class="relative w-full max-w-md">
-                    <div class="absolute -right-3 -bottom-3 w-4/5 h-4/5 bg-emerald-700 rounded-tl-3xl rounded-br-3xl -z-0"></div>
-                    <div class="relative z-10 w-full h-80 sm:h-96 rounded-2xl shadow-lg border-4 border-white overflow-hidden flex items-center justify-center" style="background-color: #84a572;">
-                        <img src="images/holy_clinic.png" 
-                             alt="Holy Clinic Emblem" 
-                             class="w-72 h-72 sm:w-80 sm:h-80 object-contain">
-                    </div>
-
-                    <div class="absolute -bottom-4 -right-2 sm:-right-4 z-20 bg-white rounded-xl shadow-lg border border-slate-100 px-5 py-3.5 text-center">
-                        <div class="w-9 h-9 mx-auto mb-1 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
-                            </svg>
-                        </div>
-                        <div class="text-base font-extrabold text-slate-900 leading-tight">24/7</div>
-                        <div class="text-[11px] text-slate-500 leading-tight">Emergency<br>Support</div>
-                    </div>
+            <!-- Compact 24/7 Support Badge -->
+            <div class="self-start lg:self-end bg-white/90 backdrop-blur-xs rounded-xl shadow-lg border border-slate-100 px-5 py-3.5 text-center">
+                <div class="w-9 h-9 mx-auto mb-1 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+                    </svg>
                 </div>
+                <div class="text-base font-extrabold text-slate-900 leading-tight">24/7</div>
+                <div class="text-[11px] text-slate-500 leading-tight">Emergency<br>Support</div>
             </div>
         </div>
     </div>

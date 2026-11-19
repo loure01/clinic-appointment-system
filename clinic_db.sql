@@ -1,15 +1,14 @@
-CREATE DATABASE IF NOT EXISTS clinic_db;
-USE clinic_db;
+
 
 -- 1. DEPARTMENTS
-CREATE TABLE IF NOT EXISTS departments (
+CREATE TABLE departments (
     department_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT
 );
 
 -- 2. DOCTORS
-CREATE TABLE IF NOT EXISTS doctors (
+CREATE TABLE doctors (
     doctor_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -20,7 +19,7 @@ CREATE TABLE IF NOT EXISTS doctors (
 );
 
 -- 3. PATIENTS
-CREATE TABLE IF NOT EXISTS patients (
+CREATE TABLE patients (
     patient_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -28,7 +27,7 @@ CREATE TABLE IF NOT EXISTS patients (
 );
 
 -- 4. APPOINTMENTS (Acts as Booking)
-CREATE TABLE IF NOT EXISTS appointments (
+CREATE TABLE appointments (
     appointment_id INT AUTO_INCREMENT PRIMARY KEY,
     patient_id INT NOT NULL,
     doctor_id INT NOT NULL,
@@ -42,7 +41,7 @@ CREATE TABLE IF NOT EXISTS appointments (
 );
 
 -- 5. PAYMENTS
-CREATE TABLE IF NOT EXISTS payments (
+CREATE TABLE payments (
     payment_id INT AUTO_INCREMENT PRIMARY KEY,
     appointment_id INT UNIQUE NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
@@ -52,7 +51,7 @@ CREATE TABLE IF NOT EXISTS payments (
 );
 
 -- 6. MEDICAL RECORDS
-CREATE TABLE IF NOT EXISTS medical_records (
+CREATE TABLE medical_records (
     record_id INT AUTO_INCREMENT PRIMARY KEY,
     patient_id INT NOT NULL,
     doctor_id INT NOT NULL,
